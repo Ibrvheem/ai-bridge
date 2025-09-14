@@ -17,7 +17,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { form } = useLoginForm();
+  const { form, onSubmit } = useLoginForm();
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -76,11 +76,13 @@ export function LoginForm({
                   </a>
                 </div>
 
-                <Link href="/playground">
-                  <Button type="submit" className="w-full">
-                    Login
-                  </Button>
-                </Link>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  onClick={() => onSubmit()}
+                >
+                  Login
+                </Button>
               </div>
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}

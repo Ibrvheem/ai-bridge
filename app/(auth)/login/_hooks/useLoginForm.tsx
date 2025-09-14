@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 export function useLoginForm() {
@@ -8,9 +9,11 @@ export function useLoginForm() {
     formState: { isSubmitting },
   } = form;
 
-  const onSubmit = handleSubmit(() => {
+  const { replace } = useRouter();
+  const onSubmit = handleSubmit((values) => {
     try {
-      console.log("Handle Logic here");
+      console.log("Handle Logic here", values);
+      replace("/playground");
     } catch (error) {
       console.error(error);
     }
