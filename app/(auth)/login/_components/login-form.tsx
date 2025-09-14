@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { Form } from "@/components/ui/form";
 import { useLoginForm } from "../_hooks/useLoginForm";
