@@ -13,7 +13,7 @@ export function useLoginForm() {
   const onSubmit = handleSubmit((values) => {
     try {
       console.log("Handle Logic here", values);
-      replace("/playground");
+      replace("/annotations");
     } catch (error) {
       console.error(error);
     }

@@ -32,22 +32,18 @@ const data = {
   },
   navMain: [
     {
-      title: "Playground",
-      url: "#",
+      title: "Annotations",
+      url: "/annotations",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "Unannotated Sentences",
+          url: "/annotations",
         },
         {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
+          title: "Annotated Sentences",
+          url: "/annotations/annotated",
         },
       ],
     },
