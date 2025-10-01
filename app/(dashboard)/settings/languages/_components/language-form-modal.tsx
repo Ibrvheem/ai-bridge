@@ -62,11 +62,12 @@ export function LanguageFormModal({
             options={[
               {
                 label: "Available for selection",
-                value: "true",
+                value: true,
               },
             ]}
             name="isActive"
-            label=""
+            label="Status"
+            mode="single"
           />
           <Button
             loading={isSubmitting}

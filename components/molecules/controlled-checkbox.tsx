@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -11,6 +12,24 @@ import {
 import { ReactNode } from "react";
 import { Checkbox } from "../ui/checkbox";
 
+// Type for checkbox options
+type CheckboxOption = {
+  label: string;
+  value: any;
+};
+
+// Props interface
+interface ControlledCheckboxGroupProps {
+  name: string;
+  options: CheckboxOption[];
+  label?: ReactNode;
+  description?: string;
+  className?: string;
+  optional?: boolean;
+  disabled?: boolean;
+  mode?: "single" | "multiple"; // Add mode to handle different behaviors
+}
+
 export default function ControlledCheckboxGroup({
   name,
   options,
@@ -19,15 +38,8 @@ export default function ControlledCheckboxGroup({
   className,
   optional,
   disabled = false,
-}: {
-  name: string;
-  options: { label: string; value: string }[];
-  label?: ReactNode;
-  description?: string;
-  className?: string;
-  optional?: boolean;
-  disabled?: boolean;
-}) {
+  mode = "multiple", // Default to multiple for backward compatibility
+}: ControlledCheckboxGroupProps) {
   return (
     <FormField
       name={name}
@@ -40,32 +52,41 @@ export default function ControlledCheckboxGroup({
             <div className={`flex flex-col gap-4 ${className}`}>
               {options.map((option) => (
                 <FormItem
-                  key={option.value}
-                  className="flex items-center space-x-0 space-y-0"
+                  key={String(option.value)}
+                  className="flex items-center space-x-3 space-y-0"
                 >
                   <FormControl>
                     <Checkbox
-                      value={option.value}
                       checked={
-                        Array.isArray(field?.value) &&
-                        field.value.includes(option.value)
+                        mode === "single"
+                          ? field.value === option.value || field.value === true
+                          : Array.isArray(field?.value) &&
+                            field.value.includes(option.value)
                       }
                       onCheckedChange={(checked) => {
-                        const currentValue = Array.isArray(field.value)
-                          ? field.value
-                          : [];
-                        const newValue = checked
-                          ? [...currentValue, option.value]
-                          : currentValue.filter(
-                              (val: string) => val !== option.value
-                            );
-                        field.onChange(newValue);
+                        if (mode === "single") {
+                          // For single mode (like isActive boolean)
+                          field.onChange(checked ? option.value : false);
+                        } else {
+                          // For multiple mode (array of values)
+                          const currentValue = Array.isArray(field.value)
+                            ? field.value
+                            : [];
+                          const newValue = checked
+                            ? [...currentValue, option.value]
+                            : currentValue.filter(
+                                (val) => val !== option.value
+                              );
+                          field.onChange(newValue);
+                        }
                       }}
                       disabled={disabled}
-                      className="!h-5 !w-5 space-y-0"
+                      className="!h-5 !w-5"
                     />
                   </FormControl>
-                  <span className="text-sm text-black/70">{option.label}</span>
+                  <span className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    {option.label}
+                  </span>
                 </FormItem>
               ))}
             </div>

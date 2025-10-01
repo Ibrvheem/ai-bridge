@@ -26,6 +26,17 @@ export async function createLanguage(data: CreateLanguage) {
     }
 
 }
+export async function deleteLanguage(id: string) {
+    try {
+        const response = await api.delete(`language/${id}`)
+        return response
+
+    } catch (error) {
+
+        return error
+    }
+
+}
 export async function revalidateLanguages() {
     revalidateTag("languages")
 } 

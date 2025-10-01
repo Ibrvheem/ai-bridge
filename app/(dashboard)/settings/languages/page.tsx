@@ -21,6 +21,8 @@ import Link from "next/link";
 import { getLanguages } from "./service";
 import { Language } from "./types";
 import { LanguageFormModal } from "./_components/language-form-modal";
+import { LanguageDeleteModal } from "./_components/language-delete-modal";
+import { LanguagesEmptyState } from "./_components/languages-empty-state";
 
 export default async function LanguagesPage() {
   const languages: Language[] = await getLanguages();
@@ -120,56 +122,64 @@ export default async function LanguagesPage() {
           <CardDescription>Manage all configured languages</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Language</TableHead>
-                <TableHead>Code</TableHead>
-                <TableHead>Native Name</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Sentences</TableHead>
-                <TableHead>Date Added</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {languages.map((language) => (
-                <TableRow key={language._id}>
-                  <TableCell className="font-medium">{language.name}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{language.code}</Badge>
-                  </TableCell>
-                  <TableCell>{language.native_name}</TableCell>
-                  <TableCell>
-                    <Button variant="ghost" size="sm">
-                      <Badge
-                        variant={language.isActive ? "default" : "secondary"}
-                        className="cursor-pointer"
-                      >
-                        {language.isActive ? "Active" : "Inactive"}
-                      </Badge>
-                    </Button>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">0</Badge>
-                  </TableCell>
-                  <TableCell>
-                    {dayjs(language.created_at).format("MMM D, YYYY")}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm">
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
+          {languages.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Language</TableHead>
+                  <TableHead>Code</TableHead>
+                  <TableHead>Native Name</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Sentences</TableHead>
+                  <TableHead>Date Added</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {languages.map((language) => (
+                  <TableRow key={language._id}>
+                    <TableCell className="font-medium">
+                      {language.name}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{language.code}</Badge>
+                    </TableCell>
+                    <TableCell>{language.native_name}</TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="sm">
+                        <Badge
+                          variant={language.isActive ? "default" : "secondary"}
+                          className="cursor-pointer"
+                        >
+                          {language.isActive ? "Active" : "Inactive"}
+                        </Badge>
+                      </Button>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">0</Badge>
+                    </TableCell>
+                    <TableCell>
+                      {dayjs(language.created_at).format("MMM D, YYYY")}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="sm">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <LanguageDeleteModal language={language}>
+                          <Button variant="ghost" size="sm">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </LanguageDeleteModal>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <LanguagesEmptyState />
+          )}
         </CardContent>
       </Card>
     </div>
