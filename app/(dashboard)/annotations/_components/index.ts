@@ -1,0 +1,1 @@
+export { UploadSentencesModal } from "./upload-sentences-modal";
