@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const url = process.env.BASE_URL + "/api";
+const url = process.env.BASE_URL;
 // const url = process.env.NEXT_PUBLIC_DATA_API_HOST;
 const getAuthHeader = async () => {
   return {

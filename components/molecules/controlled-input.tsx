@@ -9,8 +9,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { EyeIcon, EyeOff } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
+import React, { useState } from "react";
 
 export default function ControlledInput({
   name,
@@ -45,25 +44,11 @@ export default function ControlledInput({
   min?: number;
 }) {
   const [showPassword, setShowPassword] = useState(false);
-  const [hasShownError, setHasShownError] = useState(false);
 
   return (
     <FormField
       name={name}
       render={({ field, fieldState }) => {
-        // Trigger toast only once when error first appears
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        useEffect(() => {
-          if (fieldState.error?.message && !hasShownError) {
-            toast.error("Please fill in all fields before submission.");
-            setHasShownError(true);
-          }
-
-          if (!fieldState.error?.message && hasShownError) {
-            setHasShownError(false); // reset for next error
-          }
-        }, [fieldState.error?.message]);
-
         return (
           <FormItem className="">
             <FormLabel className="text-sm font-medium">

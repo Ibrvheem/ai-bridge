@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { Form } from "@/components/ui/form";
-import { useLoginForm } from "../_hooks/useLoginForm";
+import { useLoginForm } from "../_hooks/use-login-form";
 import ControlledInput from "@/components/molecules/controlled-input";
 
 export function LoginForm({
