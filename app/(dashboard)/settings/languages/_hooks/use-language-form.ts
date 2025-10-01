@@ -22,6 +22,7 @@ export function useLanguageForm() {
             const response = createLanguage(data)
             toast.success("Language added successfully")
             setOpen(false)
+            form.reset({})
             revalidateLanguages()
             return response
         } catch (error) {
