@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Link from "next/link";
 import { Form } from "@/components/ui/form";
 import { useLoginForm } from "../_hooks/use-login-form";
 import ControlledInput from "@/components/molecules/controlled-input";
@@ -17,7 +16,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { form, onSubmit } = useLoginForm();
+  const { form, onSubmit, isSubmitting } = useLoginForm();
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -30,7 +29,7 @@ export function LoginForm({
         <CardContent>
           <Form {...form}>
             <div className="grid gap-6">
-              <div className="flex flex-col gap-4">
+              <div className=" flex-col gap-4 hidden">
                 <Button variant="outline" className="w-full">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path
@@ -50,7 +49,7 @@ export function LoginForm({
                   Login with Google
                 </Button>
               </div>
-              <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+              <div className="hidden after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                 <span className="bg-card text-muted-foreground relative z-10 px-2">
                   Or continue with
                 </span>
@@ -80,6 +79,7 @@ export function LoginForm({
                   type="submit"
                   className="w-full"
                   onClick={() => onSubmit()}
+                  loading={isSubmitting}
                 >
                   Login
                 </Button>
