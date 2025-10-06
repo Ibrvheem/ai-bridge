@@ -39,7 +39,7 @@ export function middleware(request: NextRequest) {
         if (isAuthenticated) {
 
             const callbackUrl = request.nextUrl.searchParams.get('callbackUrl');
-            const redirectUrl = callbackUrl && callbackUrl.startsWith('/') ? callbackUrl : '/annotations/annotated';
+            const redirectUrl = callbackUrl && callbackUrl.startsWith('/') ? callbackUrl : '/annotations';
             return NextResponse.redirect(new URL(redirectUrl, request.url));
         }
     }

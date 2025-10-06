@@ -18,7 +18,7 @@ export function useLoginForm() {
 
       if (response.access_token) {
         toast.success('Login Successful')
-        window.location.href = '/dashboard/annotations/annotated';
+        window.location.href = '/annotations';
         return response
 
       } else {
