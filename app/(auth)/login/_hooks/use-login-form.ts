@@ -14,12 +14,11 @@ export function useLoginForm() {
   const onSubmit = handleSubmit(async (values) => {
     try {
       const response = await login(values)
-      console.log(response, 'response')
+
 
       if (response.access_token) {
         toast.success('Login Successful')
-        window.location.href = '/annotations'
-
+        window.location.href = '/dashboard/annotations/annotated';
         return response
 
       } else {

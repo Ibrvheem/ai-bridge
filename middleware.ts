@@ -4,18 +4,21 @@ import type { NextRequest } from 'next/server';
 const ACCESS_TOKEN_COOKIE = 'access_token';
 
 // Define protected routes (these require authentication)
-const protectedRoutes = ['/annotations', 'languages'];
+const protectedRoutes = ['/dashboard'];
 // Define auth routes (authenticated users should be redirected away from these)
-const authRoutes = ['/signin', '/signup'];
+const authRoutes = ['/login', '/signup'];
 // Define public routes (always accessible)
-const publicRoutes = ['/'];
+const publicRoutes = ['/', '/home']
 
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
     const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
+    console.log('Middleware running for path:', pathname);
+    console.log('Access token from cookies:', accessToken);
 
     // Check if user is authenticated
     const isAuthenticated = !!accessToken && !isTokenExpired(accessToken);
+    console.log('User is authenticated, redirecting to dashboard', isAuthenticated);
 
     // Always allow public routes
     if (publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/'))) {
@@ -25,7 +28,7 @@ export function middleware(request: NextRequest) {
     // Redirect unauthenticated users trying to access protected routes
     if (protectedRoutes.some(route => pathname.startsWith(route))) {
         if (!isAuthenticated) {
-            const loginUrl = new URL('/signin', request.url);
+            const loginUrl = new URL('/login', request.url);
             loginUrl.searchParams.set('callbackUrl', pathname);
             return NextResponse.redirect(loginUrl);
         }
@@ -34,8 +37,9 @@ export function middleware(request: NextRequest) {
     // Redirect authenticated users away from auth routes
     if (authRoutes.some(route => pathname.startsWith(route))) {
         if (isAuthenticated) {
+
             const callbackUrl = request.nextUrl.searchParams.get('callbackUrl');
-            const redirectUrl = callbackUrl && callbackUrl.startsWith('/') ? callbackUrl : '/dashboard';
+            const redirectUrl = callbackUrl && callbackUrl.startsWith('/') ? callbackUrl : '/annotations/annotated';
             return NextResponse.redirect(new URL(redirectUrl, request.url));
         }
     }
