@@ -84,11 +84,12 @@ export const api = {
         const headers: Record<string, string> = {
             "Bypass-Tunnel-Reminder": "Bypass-Tunnel-Reminder",
         };
-
+        console.log(token)
         if (token) {
             headers.Authorization = `Bearer ${token}`;
         }
 
+        // Don't set Content-Type for FormData - let browser set it automatically
         const response = await fetch(`${url}/${endpoint}`, {
             method: "POST",
             headers,

@@ -1,16 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Form } from "@/components/ui/form";
+import ControlledSelect from "@/components/molecules/controlled-select";
+import { FileDropzone } from "@/components/molecules/file-dropzone";
+import { ControlledFileDropzone } from "@/components/molecules/controlled-file-dropzone";
 import {
   Dialog,
   DialogContent,
@@ -19,9 +13,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Upload, Download, FileText } from "lucide-react";
+import { Download, FileText, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { Languages } from "../../settings/languages/types";
+import { useUploadSentences } from "../_hooks/use-upload-sentences";
 
 interface UploadSentencesModalProps {
   children: React.ReactNode;
@@ -32,54 +27,21 @@ export function UploadSentencesModal({
   children,
   languages,
 }: UploadSentencesModalProps) {
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState("");
-  const [uploadFile, setUploadFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const { onSubmit, form, file, setFile, open, setOpen, isSubmitting } =
+    useUploadSentences();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-
-    if (!file) return;
-
-    // File type validation
-    const allowedTypes = [
-      "text/csv",
-      "application/vnd.ms-excel",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    ];
-
-    const allowedExtensions = [".csv", ".xls", ".xlsx"];
-    const fileExtension = file.name
-      .toLowerCase()
-      .substring(file.name.lastIndexOf("."));
-
-    if (
-      !allowedTypes.includes(file.type) &&
-      !allowedExtensions.includes(fileExtension)
-    ) {
-      toast.error("Invalid file type. Please upload a CSV or Excel file.");
-      return;
-    }
-
-    // File size validation (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error(
-        "File size too large. Please upload a file smaller than 10MB."
-      );
-      return;
-    }
-
-    setUploadFile(file);
-  };
+  const formattedLanguages = languages.map((lang) => ({
+    name: lang.name,
+    value: lang.code,
+  }));
 
   const downloadSampleExcel = () => {
     // Create a sample CSV content
     const sampleData = [
-      ["sentence", "language"],
-      ["The quick brown fox jumps over the lazy dog", "English"],
-      ["Lorem ipsum dolor sit amet", "Latin"],
-      ["Bonjour le monde", "French"],
+      ["sentence", "original_content"],
+      ["The quick brown fox jumps over the lazy dog", "Original sentence"],
+      ["Lorem ipsum dolor sit amet", "Latin text"],
+      ["Bonjour le monde", "French greeting"],
     ];
 
     const csvContent = sampleData.map((row) => row.join(",")).join("\n");
@@ -96,48 +58,8 @@ export function UploadSentencesModal({
     toast.success("Sample file downloaded successfully!");
   };
 
-  const handleUpload = async () => {
-    if (!uploadFile || !selectedLanguage) {
-      toast.error("Please select a language and upload a file.");
-      return;
-    }
-
-    setIsUploading(true);
-
-    // Simulate upload process
-    try {
-      // Here you would typically send the file to your backend
-      // const formData = new FormData();
-      // formData.append('file', uploadFile);
-      // formData.append('language', selectedLanguage);
-      // await uploadSentences(formData);
-
-      // Simulate processing time
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      toast.success(
-        "Upload completed successfully! Check back later to see the processed sentences."
-      );
-
-      // Reset form
-      setUploadFile(null);
-      setSelectedLanguage("");
-      setIsUploadModalOpen(false);
-    } catch {
-      toast.error("Upload failed. Please try again.");
-    } finally {
-      setIsUploading(false);
-    }
-  };
-  const formattedLanguages = languages.map((lang) => {
-    return {
-      value: lang.code,
-      label: lang.name,
-    };
-  });
-
   return (
-    <Dialog open={isUploadModalOpen} onOpenChange={setIsUploadModalOpen}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -147,96 +69,70 @@ export function UploadSentencesModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
-          {/* Download sample */}
-          <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/20">
-            <div className="flex items-center gap-3">
-              <FileText className="h-8 w-8 text-blue-500" />
-              <div>
-                <p className="font-medium">Need a template?</p>
-                <p className="text-sm text-muted-foreground">
-                  Download a sample
-                </p>
+        <Form {...form}>
+          <form onSubmit={onSubmit} className="space-y-4">
+            {/* Download sample */}
+            <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/20">
+              <div className="flex items-center gap-3">
+                <FileText className="h-8 w-8 text-blue-500" />
+                <div>
+                  <p className="font-medium">Need a template?</p>
+                  <p className="text-sm text-muted-foreground">
+                    Download a sample CSV
+                  </p>
+                </div>
               </div>
+              <Button variant="outline" size="sm" onClick={downloadSampleExcel}>
+                <Download className="mr-2 h-4 w-4" />
+                Download
+              </Button>
             </div>
-            <Button variant="outline" size="sm" onClick={downloadSampleExcel}>
-              <Download className="mr-2 h-4 w-4" />
-              Download
-            </Button>
-          </div>
 
-          {/* Language selection */}
-          <div className="space-y-2 w-full">
-            <Label htmlFor="language">Language</Label>
-            <Select
-              value={selectedLanguage}
-              onValueChange={setSelectedLanguage}
+            {/* Language selection */}
+            <ControlledSelect
+              name="language"
+              label="Language (Optional)"
+              placeholder="Select a language"
+              description="Leave empty to set during annotation"
+              values={formattedLanguages}
+              optional={true}
+            />
+
+            {/* File upload with reusable FileDropzone */}
+            <FileDropzone
+              file={file}
+              onFileSelect={setFile}
+              label="Upload File"
+              placeholder="Click to upload or drag and drop"
+              helperText="CSV, XLS, XLSX up to 10MB"
+              accept={{
+                "text/csv": [".csv"],
+                "application/vnd.ms-excel": [".xls"],
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                  [".xlsx"],
+              }}
+              maxSize={10 * 1024 * 1024}
+              successMessage="File selected successfully!"
+              multiple={false}
+            />
+
+            {/* Upload button */}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isSubmitting || !file}
             >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select language" />
-              </SelectTrigger>
-              <SelectContent>
-                {formattedLanguages.map((lang) => (
-                  <SelectItem key={lang.value} value={lang.value}>
-                    {lang.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* File upload */}
-          <div className="space-y-2">
-            <Label htmlFor="file">Upload File</Label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-              <Input
-                id="file"
-                type="file"
-                accept=".csv,.xls,.xlsx"
-                onChange={handleFileChange}
-                className="hidden"
-              />
-              <Label
-                htmlFor="file"
-                className="cursor-pointer flex flex-col items-center gap-2"
-              >
-                <Upload className="h-8 w-8 text-gray-400" />
-                <span className="text-sm text-gray-600">
-                  {uploadFile
-                    ? uploadFile.name
-                    : "Click to upload or drag and drop"}
-                </span>
-                <span className="text-xs text-gray-400">
-                  CSV, XLS, XLSX up to 10MB
-                </span>
-              </Label>
-            </div>
-            {uploadFile && (
-              <p className="text-sm text-green-600">
-                ✓ File selected: {uploadFile.name}
-              </p>
-            )}
-          </div>
-
-          {/* Upload button */}
-          <Button
-            onClick={handleUpload}
-            className="w-full"
-            disabled={!uploadFile || !selectedLanguage || isUploading}
-          >
-            {isUploading ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Uploading...
-              </>
-            ) : (
-              <>
-                <Upload className="mr-2 h-4 w-4" />
-                Upload Sentences
-              </>
-            )}
-          </Button>
-        </div>
+              {isSubmitting ? (
+                "Uploading..."
+              ) : (
+                <>
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload Sentences
+                </>
+              )}
+            </Button>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
