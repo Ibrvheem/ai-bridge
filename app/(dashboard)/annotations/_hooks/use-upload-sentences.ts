@@ -6,9 +6,10 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
 import { uploadSentences } from "../services"
+import { revalidateLanguages } from "../../settings/languages/service"
 
 const uploadSchema = z.object({
-    language: z.string().optional(),
+    language: z.string(),
 })
 
 type UploadFormData = z.infer<typeof uploadSchema>
@@ -19,9 +20,6 @@ export function useUploadSentences() {
 
     const form = useForm<UploadFormData>({
         resolver: zodResolver(uploadSchema),
-        defaultValues: {
-            language: "",
-        }
     })
 
     const { handleSubmit, formState: { isSubmitting } } = form
@@ -40,14 +38,13 @@ export function useUploadSentences() {
                 formData.append("language", data.language)
             }
 
-            console.log("Uploading file:", file.name)
-            console.log("Language:", data.language)
 
             const response = await uploadSentences(formData)
 
-            console.log(response)
+
 
             toast.success("File uploaded successfully!")
+            revalidateLanguages()
             setOpen(false)
             setFile(null)
 

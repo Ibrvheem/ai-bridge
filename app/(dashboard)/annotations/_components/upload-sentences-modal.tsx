@@ -91,11 +91,11 @@ export function UploadSentencesModal({
             {/* Language selection */}
             <ControlledSelect
               name="language"
-              label="Language (Optional)"
+              label="Language"
               placeholder="Select a language"
               description="Leave empty to set during annotation"
               values={formattedLanguages}
-              optional={true}
+              className="w-full"
             />
 
             {/* File upload with reusable FileDropzone */}

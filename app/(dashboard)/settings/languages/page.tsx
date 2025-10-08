@@ -26,7 +26,6 @@ import { LanguagesEmptyState } from "./_components/languages-empty-state";
 
 export default async function LanguagesPage() {
   const languages: Language[] = await getLanguages();
-  console.log("Languages:", languages);
 
   return (
     <div className="space-y-6">

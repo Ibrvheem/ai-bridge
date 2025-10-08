@@ -18,49 +18,15 @@ import {
 import { Upload, FileText, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { UploadSentencesModal } from "./_components";
 import { getLanguages } from "../settings/languages/service";
-
-// Mock data for demonstration
-const mockSentences = [
-  {
-    id: 1,
-    text: "The quick brown fox jumps over the lazy dog.",
-    language: "English",
-    uploadDate: "2023-09-15",
-    status: "pending",
-  },
-  {
-    id: 2,
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    language: "Latin",
-    uploadDate: "2023-09-14",
-    status: "pending",
-  },
-  {
-    id: 3,
-    text: "Hello world, this is a sample sentence for annotation.",
-    language: "English",
-    uploadDate: "2023-09-13",
-    status: "pending",
-  },
-  {
-    id: 4,
-    text: "Machine learning is transforming the way we process data.",
-    language: "English",
-    uploadDate: "2023-09-12",
-    status: "pending",
-  },
-  {
-    id: 5,
-    text: "Natural language processing enables computers to understand human language.",
-    language: "English",
-    uploadDate: "2023-09-11",
-    status: "pending",
-  },
-];
+import { getSentences } from "./services";
+import dayjs from "@/lib/dayjs";
+import { SentenceSchema } from "./types";
 
 export default async function AnnotationsPage() {
-  const sentences = mockSentences;
+  const sentences: SentenceSchema[] = await getSentences();
   const languages = await getLanguages();
+
+  console.log(sentences);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -167,29 +133,28 @@ export default async function AnnotationsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>ID</TableHead>
-                <TableHead>Sentence</TableHead>
                 <TableHead>Language</TableHead>
+                <TableHead>Sentence</TableHead>
+                <TableHead>Original Content</TableHead>
                 <TableHead>Upload Date</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Uploaded By</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {sentences.map((sentence) => (
                 <TableRow key={sentence.id}>
-                  <TableCell className="font-medium">#{sentence.id}</TableCell>
-                  <TableCell className="max-w-md truncate">
-                    {sentence.text}
+                  <TableCell className="font-medium">
+                    #{sentence._id.slice(-5)}
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline">{sentence.language}</Badge>
                   </TableCell>
-                  <TableCell>{sentence.uploadDate}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {getStatusIcon(sentence.status)}
-                      {getStatusBadge(sentence.status)}
-                    </div>
+                  <TableCell className="max-w-md truncate">
+                    {sentence.sentence}
                   </TableCell>
+                  <TableCell>{sentence.original_content}</TableCell>
+                  <TableCell>{dayjs(sentence.created_at).fromNow()}</TableCell>
+                  <TableCell>{sentence.user?.email}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

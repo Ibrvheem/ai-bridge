@@ -13,12 +13,9 @@ const publicRoutes = ['/', '/home']
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
     const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
-    console.log('Middleware running for path:', pathname);
-    console.log('Access token from cookies:', accessToken);
 
     // Check if user is authenticated
     const isAuthenticated = !!accessToken && !isTokenExpired(accessToken);
-    console.log('User is authenticated, redirecting to dashboard', isAuthenticated);
 
     // Always allow public routes
     if (publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/'))) {

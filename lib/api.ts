@@ -84,7 +84,6 @@ export const api = {
         const headers: Record<string, string> = {
             "Bypass-Tunnel-Reminder": "Bypass-Tunnel-Reminder",
         };
-        console.log(token)
         if (token) {
             headers.Authorization = `Bearer ${token}`;
         }

@@ -9,3 +9,17 @@ export const uploadCSVSchema = z.object({
     ),
     language: z.string(),
 })
+
+export const sentenceSchema = z.object({
+    id: z.string(),
+    sentence: z.string(),
+    user: { email: z.string(), _id: z.string() },
+    original_content: z.string().optional(),
+    bias_category: z.string().optional(),
+    language: z.string().optional(),
+    document_id: z.string().optional(),
+    created_at: z.string(),
+    updated_at: z.string(),
+});
+
+export type SentenceSchema = z.infer<typeof sentenceSchema>;

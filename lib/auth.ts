@@ -20,7 +20,6 @@ export interface AuthTokens {
  */
 export async function getAccessToken(): Promise<string | null> {
     const cookieStore = await cookies();
-    console.log('Cookies:', cookieStore.getAll());
     return cookieStore.get(ACCESS_TOKEN_COOKIE)?.value || null;
 }
 
