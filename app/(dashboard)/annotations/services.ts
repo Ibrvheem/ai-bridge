@@ -26,6 +26,30 @@ export async function getSentences() {
     }
 }
 
+export async function uploadStats() {
+    try {
+        const response = await api.get('sentences/upload-stats', {
+            tags: ['sentences']
+        });
+        return response;
+    } catch (error) {
+        console.error('Error fetching upload stats:', error);
+        return { error: 'Failed to fetch upload stats' };
+    }
+}
+
+export async function getUploadHistory() {
+    try {
+        const response = await api.get('sentences/upload-history', {
+            tags: ['sentences']
+        });
+        return response;
+    } catch (error) {
+        console.error('Error fetching upload history:', error);
+        return { error: 'Failed to fetch upload history' };
+    }
+}
+
 export async function revalidateSentences() {
     await revalidateTag('sentences');
 }

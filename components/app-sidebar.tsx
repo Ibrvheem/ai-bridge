@@ -39,7 +39,7 @@ const data = {
       items: [
         {
           title: "Unannotated Sentences",
-          url: "/annotations",
+          url: "/annotations/unannotated",
         },
         {
           title: "Annotated Sentences",

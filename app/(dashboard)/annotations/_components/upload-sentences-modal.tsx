@@ -38,12 +38,11 @@ export function UploadSentencesModal({
   const downloadSampleExcel = () => {
     // Create a sample CSV content
     const sampleData = [
-      ["sentence", "original_content"],
-      ["The quick brown fox jumps over the lazy dog", "Original sentence"],
-      ["Lorem ipsum dolor sit amet", "Latin text"],
-      ["Bonjour le monde", "French greeting"],
+      ["sentence", "original_content", "language"],
+      ["This is a sample sentence.", "Original content here", "en"],
+      ["Another example sentence.", "More original content", "en"],
+      ["Third example.", "Original text", "en"],
     ];
-
     const csvContent = sampleData.map((row) => row.join(",")).join("\n");
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
