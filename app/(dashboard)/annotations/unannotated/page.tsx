@@ -15,12 +15,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Upload, FileText, Clock, CheckCircle2, XCircle } from "lucide-react";
+import {
+  Upload,
+  FileText,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  MessageSquare,
+} from "lucide-react";
 import { UploadSentencesModal } from "../_components";
 import { getLanguages } from "../../settings/languages/service";
 import { getSentences } from "../services";
 import dayjs from "@/lib/dayjs";
 import { SentenceSchema } from "../types";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export default async function UnannotatedPage() {
   const sentences: SentenceSchema[] = await getSentences();
@@ -129,36 +137,55 @@ export default async function UnannotatedPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Language</TableHead>
-                <TableHead>Sentence</TableHead>
-                <TableHead>Original Content</TableHead>
-                <TableHead>Upload Date</TableHead>
-                <TableHead>Uploaded By</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sentences.map((sentence) => (
-                <TableRow key={sentence.id}>
-                  <TableCell className="font-medium">
-                    #{sentence._id.slice(-5)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{sentence.language}</Badge>
-                  </TableCell>
-                  <TableCell className="max-w-md truncate">
-                    {sentence.sentence}
-                  </TableCell>
-                  <TableCell>{sentence.original_content}</TableCell>
-                  <TableCell>{dayjs(sentence.created_at).fromNow()}</TableCell>
-                  <TableCell>{sentence.user?.email}</TableCell>
+          {sentences.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Language</TableHead>
+                  <TableHead>Sentence</TableHead>
+                  <TableHead>Original Content</TableHead>
+                  <TableHead>Upload Date</TableHead>
+                  <TableHead>Uploaded By</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {sentences.map((sentence) => (
+                  <TableRow key={sentence.id}>
+                    <TableCell className="font-medium">
+                      #{sentence._id.slice(-5)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{sentence.language}</Badge>
+                    </TableCell>
+                    <TableCell className="max-w-md truncate">
+                      {sentence.sentence}
+                    </TableCell>
+                    <TableCell>{sentence.original_content}</TableCell>
+                    <TableCell>
+                      {dayjs(sentence.created_at).fromNow()}
+                    </TableCell>
+                    <TableCell>{sentence.user?.email}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="py-8">
+              <EmptyState
+                icon={MessageSquare}
+                title="No sentences to annotate"
+                description="Upload your first CSV file containing sentences to start the annotation process."
+              >
+                <UploadSentencesModal languages={languages}>
+                  <Button className="mt-4">
+                    <Upload className="mr-2 h-4 w-4" />
+                    Upload Sentences
+                  </Button>
+                </UploadSentencesModal>
+              </EmptyState>
+            </div>
+          )}
         </CardContent>
       </Card>
 

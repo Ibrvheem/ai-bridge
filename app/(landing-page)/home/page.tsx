@@ -1,31 +1,26 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
-import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
+import { UserMenu } from "@/components/ui/user-menu";
 import { GalleryVerticalEnd } from "lucide-react";
 import Link from "next/link";
+import { getCurrentUser } from "@/lib/auth";
+import { BiasInput } from "./_components/bias-input";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const user = await getCurrentUser();
+
   const placeholders = [
     "Women are naturally bad at math.",
-    "All programmers are introverts who don’t like socializing.",
-    "Older people can’t learn new technologies.",
+    "All programmers are introverts who don't like socializing.",
+    "Older people can't learn new technologies.",
     "If someone is rich, they must be greedy.",
     "Men are better leaders than women.",
-    "People who don’t go to college aren’t intelligent.",
+    "People who don't go to college aren't intelligent.",
     "All teenagers are lazy and irresponsible.",
     "Immigrants take jobs away from locals.",
-    "People from rural areas aren’t ambitious.",
-    "Athletes aren’t as smart as academics.",
+    "People from rural areas aren't ambitious.",
+    "Athletes aren't as smart as academics.",
   ];
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
-  };
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("submitted");
-  };
   return (
     <div className="p-4 bg-black text-white h-screen relative">
       <div className="max-w-5xl mx-auto">
@@ -40,22 +35,23 @@ export default function HomePage() {
               AI-BRIDGE Bias Detection System
             </p>
           </div>
-          <Link href={"/login"}>
-            <Button>Sign In</Button>
-          </Link>
+          {user ? (
+            <UserMenu user={user} />
+          ) : (
+            <Link href={"/login"}>
+              <Button>Sign In</Button>
+            </Link>
+          )}
         </div>
+
         <div className="min-h-[30vh] flex items-center justify-end flex-col w-full">
           <h2 className="my-4 text-xl text-center sm:text-5xl text-white">
             Analyze your sentence for bias
           </h2>
-          <PlaceholdersAndVanishInput
-            placeholders={placeholders}
-            onChange={handleChange}
-            onSubmit={onSubmit}
-          />
+          <BiasInput placeholders={placeholders} />
         </div>
-        {/* <ChartRadialText /> */}
       </div>
+
       <footer className="absolute bottom-0 w-full text-center p-4 border-t border-white/10 text-sm text-white/50">
         Powered by StudyLabs
       </footer>

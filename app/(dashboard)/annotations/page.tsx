@@ -23,11 +23,13 @@ import {
   AlertTriangle,
   Download,
   Clock,
+  FolderOpen,
 } from "lucide-react";
 import Link from "next/link";
 import { getUploadHistory, uploadStats } from "./services";
 import dayjs from "@/lib/dayjs";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export default async function AnnotationsPage() {
   const upload_stats = await uploadStats();
@@ -199,128 +201,142 @@ export default async function AnnotationsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow className="border-slate-200">
-                <TableHead className="text-slate-700">File</TableHead>
-                <TableHead className="text-slate-700">Status</TableHead>
-                <TableHead className="text-slate-700">Processed</TableHead>
-                <TableHead className="text-slate-700">Success</TableHead>
-                <TableHead className="text-slate-700">Duplicates</TableHead>
-                <TableHead className="text-slate-700">Upload Date</TableHead>
-                <TableHead className="text-slate-700">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {upload_history.map((upload) => (
-                <TableRow key={upload._id} className="border-slate-200">
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <FileText className="h-4 w-4 text-slate-500" />
-                      <div>
-                        <p className="font-medium text-slate-900 text-sm">
-                          {upload.original_filename}
+          {upload_history.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow className="border-slate-200">
+                  <TableHead className="text-slate-700">File</TableHead>
+                  <TableHead className="text-slate-700">Status</TableHead>
+                  <TableHead className="text-slate-700">Processed</TableHead>
+                  <TableHead className="text-slate-700">Success</TableHead>
+                  <TableHead className="text-slate-700">Duplicates</TableHead>
+                  <TableHead className="text-slate-700">Upload Date</TableHead>
+                  <TableHead className="text-slate-700">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {upload_history.map((upload) => (
+                  <TableRow key={upload._id} className="border-slate-200">
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <FileText className="h-4 w-4 text-slate-500" />
+                        <div>
+                          <p className="font-medium text-slate-900 text-sm">
+                            {upload.original_filename}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {upload.file_size < 1024 * 1024
+                              ? `${(upload.file_size / 1024).toFixed(1)} KB`
+                              : upload.file_size < 1024 * 1024 * 1024
+                              ? `${(upload.file_size / (1024 * 1024)).toFixed(
+                                  1
+                                )} MB`
+                              : `${(
+                                  upload.file_size /
+                                  (1024 * 1024 * 1024)
+                                ).toFixed(1)} GB`}
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        {upload.status === "completed" ? (
+                          <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                        ) : upload.status === "failed" ? (
+                          <AlertTriangle className="h-4 w-4 text-red-600" />
+                        ) : (
+                          <Clock className="h-4 w-4 text-amber-600" />
+                        )}
+                        <Badge
+                          variant={
+                            upload.status === "completed"
+                              ? "default"
+                              : "secondary"
+                          }
+                          className={
+                            upload.status === "completed"
+                              ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-100"
+                              : upload.status === "failed"
+                              ? "bg-red-100 text-red-800 hover:bg-red-100"
+                              : "bg-amber-100 text-amber-800 hover:bg-amber-100"
+                          }
+                        >
+                          {upload.status}
+                        </Badge>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-slate-900 font-medium">
+                        {upload.total_rows}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-emerald-700 font-medium">
+                          {upload.successful_inserts}
+                        </span>
+                        {upload.total_rows > 0 && (
+                          <Badge
+                            variant="outline"
+                            className="text-xs border-emerald-200 text-emerald-700"
+                          >
+                            {Math.round(
+                              (upload.successful_inserts / upload.total_rows) *
+                                100
+                            )}
+                            %
+                          </Badge>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-amber-700 font-medium">
+                        {upload.duplicate_count}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm">
+                        <p className="text-slate-900">
+                          {dayjs(upload.created_at).format("MMM D, YYYY")}
                         </p>
-                        <p className="text-xs text-slate-500">
-                          {upload.file_size < 1024 * 1024
-                            ? `${(upload.file_size / 1024).toFixed(1)} KB`
-                            : upload.file_size < 1024 * 1024 * 1024
-                            ? `${(upload.file_size / (1024 * 1024)).toFixed(
-                                1
-                              )} MB`
-                            : `${(
-                                upload.file_size /
-                                (1024 * 1024 * 1024)
-                              ).toFixed(1)} GB`}
+                        <p className="text-slate-500 text-xs">
+                          {dayjs(upload.created_at).fromNow()}
                         </p>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      {upload.status === "completed" ? (
-                        <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                      ) : upload.status === "failed" ? (
-                        <AlertTriangle className="h-4 w-4 text-red-600" />
-                      ) : (
-                        <Clock className="h-4 w-4 text-amber-600" />
-                      )}
-                      <Badge
-                        variant={
-                          upload.status === "completed"
-                            ? "default"
-                            : "secondary"
-                        }
-                        className={
-                          upload.status === "completed"
-                            ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-100"
-                            : upload.status === "failed"
-                            ? "bg-red-100 text-red-800 hover:bg-red-100"
-                            : "bg-amber-100 text-amber-800 hover:bg-amber-100"
-                        }
+                    </TableCell>
+                    <TableCell>
+                      <a
+                        href={upload.download_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
                       >
-                        {upload.status}
-                      </Badge>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-slate-900 font-medium">
-                      {upload.total_rows}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-emerald-700 font-medium">
-                        {upload.successful_inserts}
-                      </span>
-                      {upload.total_rows > 0 && (
-                        <Badge
+                        <Button
                           variant="outline"
-                          className="text-xs border-emerald-200 text-emerald-700"
+                          size="sm"
+                          className="border-slate-300 text-slate-700 hover:bg-slate-50"
                         >
-                          {Math.round(
-                            (upload.successful_inserts / upload.total_rows) *
-                              100
-                          )}
-                          %
-                        </Badge>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-amber-700 font-medium">
-                      {upload.duplicate_count}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm">
-                      <p className="text-slate-900">
-                        {dayjs(upload.created_at).format("MMM D, YYYY")}
-                      </p>
-                      <p className="text-slate-500 text-xs">
-                        {dayjs(upload.created_at).fromNow()}
-                      </p>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <a
-                      href={upload.download_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border-slate-300 text-slate-700 hover:bg-slate-50"
-                      >
-                        <Download className="h-3 w-3 " />
-                      </Button>
-                    </a>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                          <Download className="h-3 w-3 " />
+                        </Button>
+                      </a>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="py-8">
+              <EmptyState
+                icon={FolderOpen}
+                title="No uploads yet"
+                description="Upload your first CSV file to see upload history and processing results here."
+                action={{
+                  label: "Upload Sentences",
+                  href: "/annotations/unannotated",
+                }}
+              />
+            </div>
+          )}
         </CardContent>
       </Card>
 

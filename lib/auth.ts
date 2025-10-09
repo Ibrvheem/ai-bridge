@@ -42,7 +42,7 @@ export async function setAuthTokens(tokens: AuthTokens) {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
-        maxAge: 60 * 60, // 1 hour
+        maxAge: 60 * 60 * 9, // 9 hours
         path: "/",
     });
 
@@ -70,11 +70,23 @@ export async function clearAuthTokens() {
 /**
  * Decode JWT token to get user information
  */
-export function decodeToken(token: string): User | null {
+export async function decodeToken(token?: string): Promise<User | null> {
     try {
-        const base64Url = token.split('.')[1];
-        if (!base64Url) return null;
+        // Get token - either passed in or from cookies
+        const actualToken = token || await getAccessToken();
+        if (!actualToken) {
+            console.log('No token found');
+            return null;
+        }
 
+        // Split token and get payload
+        const tokenParts = actualToken.split('.');
+        if (tokenParts.length !== 3) {
+            console.log('Invalid token format');
+            return null;
+        }
+
+        const base64Url = tokenParts[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
         const jsonPayload = decodeURIComponent(
             atob(base64)
@@ -84,9 +96,11 @@ export function decodeToken(token: string): User | null {
         );
 
         const payload = JSON.parse(jsonPayload);
+        console.log('Decoded token payload:', payload);
 
         // Check if token is expired
         if (payload.exp && Date.now() >= payload.exp * 1000) {
+            console.log('Token is expired');
             return null;
         }
 

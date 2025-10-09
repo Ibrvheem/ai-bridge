@@ -3,12 +3,10 @@ import type { NextRequest } from 'next/server';
 
 const ACCESS_TOKEN_COOKIE = 'access_token';
 
-// Define protected routes (these require authentication)
-const protectedRoutes = ['/dashboard'];
 // Define auth routes (authenticated users should be redirected away from these)
 const authRoutes = ['/login', '/signup'];
-// Define public routes (always accessible)
-const publicRoutes = ['/', '/home']
+// Define public routes (always accessible, no authentication required)
+const publicRoutes = ['/', '/home'];
 
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
@@ -22,23 +20,21 @@ export function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
-    // Redirect unauthenticated users trying to access protected routes
-    if (protectedRoutes.some(route => pathname.startsWith(route))) {
-        if (!isAuthenticated) {
-            const loginUrl = new URL('/login', request.url);
-            loginUrl.searchParams.set('callbackUrl', pathname);
-            return NextResponse.redirect(loginUrl);
-        }
-    }
-
     // Redirect authenticated users away from auth routes
     if (authRoutes.some(route => pathname.startsWith(route))) {
         if (isAuthenticated) {
-
             const callbackUrl = request.nextUrl.searchParams.get('callbackUrl');
             const redirectUrl = callbackUrl && callbackUrl.startsWith('/') ? callbackUrl : '/annotations';
             return NextResponse.redirect(new URL(redirectUrl, request.url));
         }
+        return NextResponse.next();
+    }
+
+    // All other routes are protected - require authentication
+    if (!isAuthenticated) {
+        const loginUrl = new URL('/login', request.url);
+        loginUrl.searchParams.set('callbackUrl', pathname);
+        return NextResponse.redirect(loginUrl);
     }
 
     return NextResponse.next();

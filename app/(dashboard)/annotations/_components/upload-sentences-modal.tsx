@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import ControlledSelect from "@/components/molecules/controlled-select";
 import { FileDropzone } from "@/components/molecules/file-dropzone";
-import { ControlledFileDropzone } from "@/components/molecules/controlled-file-dropzone";
 import {
   Dialog,
   DialogContent,

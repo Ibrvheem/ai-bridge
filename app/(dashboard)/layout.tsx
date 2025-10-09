@@ -5,11 +5,32 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { UserSchema } from "../(auth)/login/types";
+import { redirect } from "next/navigation";
+import { decodeToken, getAccessToken } from "@/lib/auth";
 
-export default function Page({ children }: { children: React.ReactNode }) {
+export default async function Page({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  console.log("=== Dashboard Layout Debug ===");
+
+  // Check if we have a token first
+  const token = await getAccessToken();
+  console.log("Raw token exists:", !!token);
+  console.log("Token length:", token?.length);
+
+  const user = (await decodeToken()) as UserSchema | null;
+  console.log("Decoded user in layout:", user);
+
+  // if (!user) {
+  //   redirect("/login");
+  //   return null;
+  // }
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar user={user || { id: "", email: "guest@example.com" }} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">
