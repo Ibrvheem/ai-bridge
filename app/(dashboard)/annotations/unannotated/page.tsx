@@ -15,52 +15,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Upload,
-  FileText,
-  Clock,
-  CheckCircle2,
-  XCircle,
-  MessageSquare,
-} from "lucide-react";
+import { Upload, FileText, Clock, MessageSquare } from "lucide-react";
 import { UploadSentencesModal } from "../_components";
 import { getLanguages } from "../../settings/languages/service";
-import { getSentences } from "../services";
 import dayjs from "@/lib/dayjs";
-import { SentenceSchema } from "../types";
 import { EmptyState } from "@/components/ui/empty-state";
+import { getUnannotatedSentences } from "../../sentences/services";
+import { SentenceSchema } from "../../sentences/types";
 
 export default async function UnannotatedPage() {
-  const sentences: SentenceSchema[] = await getSentences();
+  const sentences: SentenceSchema[] = await getUnannotatedSentences();
   const languages = await getLanguages();
 
-  console.log(sentences);
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "completed":
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
-      case "failed":
-        return <XCircle className="h-4 w-4 text-red-500" />;
-      default:
-        return <Clock className="h-4 w-4 text-yellow-500" />;
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    const variants = {
-      pending: "secondary",
-      completed: "default",
-      failed: "destructive",
-    } as const;
-
-    return (
-      <Badge variant={variants[status as keyof typeof variants] || "secondary"}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </Badge>
-    );
-  };
-
+  console.log("Sentences:", sentences);
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -119,7 +86,7 @@ export default async function UnannotatedPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {sentences.filter((s) => s.status === "pending").length}
+              {/* {sentences.filter((s) => s.status === "pending").length} */}
             </div>
             <p className="text-xs text-muted-foreground">
               Ready for annotation
@@ -151,7 +118,7 @@ export default async function UnannotatedPage() {
               </TableHeader>
               <TableBody>
                 {sentences.map((sentence) => (
-                  <TableRow key={sentence.id}>
+                  <TableRow key={sentence._id}>
                     <TableCell className="font-medium">
                       #{sentence._id.slice(-5)}
                     </TableCell>

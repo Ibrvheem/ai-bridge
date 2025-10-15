@@ -14,17 +14,7 @@ export async function uploadSentences(payload: FormData) {
     }
 }
 
-export async function getSentences() {
-    try {
-        const response = await api.get('sentences', {
-            tags: ['sentences']
-        });
-        return response;
-    } catch (error) {
-        console.error('Error fetching sentences:', error);
-        return { error: 'Failed to fetch sentences' };
-    }
-}
+
 
 export async function uploadStats() {
     try {
