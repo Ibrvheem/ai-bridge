@@ -71,7 +71,6 @@ export function AnnotateSentenceModal({
     try {
       const result = await annotateSentence(sentence._id, data.bias_category);
       if (result.error) {
-        console.log("Result with error:", result);
         toast.error(
           result.message.map((each: string) => {
             return each;
@@ -82,7 +81,6 @@ export function AnnotateSentenceModal({
         setIsLoading(false);
         return;
       }
-      console.log("Result:", result);
       toast.success("Sentence annotated successfully");
       form.reset();
       onOpenChange(false);

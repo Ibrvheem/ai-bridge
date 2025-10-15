@@ -27,7 +27,6 @@ export default async function UnannotatedPage() {
   const sentences: SentenceSchema[] = await getUnannotatedSentences();
   const languages = await getLanguages();
 
-  console.log("Sentences:", sentences);
   return (
     <div className="space-y-6">
       {/* Header */}

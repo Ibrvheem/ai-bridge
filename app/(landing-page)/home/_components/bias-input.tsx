@@ -13,7 +13,6 @@ export function BiasInput({ placeholders }: BiasInputProps) {
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("submitted");
   };
 
   return (

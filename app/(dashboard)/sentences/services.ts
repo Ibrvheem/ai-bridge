@@ -16,6 +16,18 @@ export async function getUnannotatedSentences() {
     }
 }
 
+export async function getAnnotatedSentences() {
+    try {
+        const response = await api.get('sentences/annotated', {
+            tags: ['sentences']
+        });
+        return response;
+    } catch (error) {
+        console.error('Error fetching sentences:', error);
+        return { error: 'Failed to fetch sentences' };
+    }
+}
+
 export async function annotateSentence(sentenceId: string, biasCategory: BiasCategoryType) {
     try {
         const response = await api.patch(`sentences/annotate/${sentenceId}`, {
@@ -33,7 +45,6 @@ export async function annotateSentence(sentenceId: string, biasCategory: BiasCat
 export async function getBiasCategories() {
     try {
         const categories = await api.get('sentences/categories');
-        console.log(categories)
         return categories;
     } catch (error) {
         console.error('Error fetching bias categories:', error);

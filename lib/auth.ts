@@ -75,14 +75,12 @@ export async function decodeToken(token?: string): Promise<User | null> {
         // Get token - either passed in or from cookies
         const actualToken = token || await getAccessToken();
         if (!actualToken) {
-            console.log('No token found');
             return null;
         }
 
         // Split token and get payload
         const tokenParts = actualToken.split('.');
         if (tokenParts.length !== 3) {
-            console.log('Invalid token format');
             return null;
         }
 
@@ -96,11 +94,9 @@ export async function decodeToken(token?: string): Promise<User | null> {
         );
 
         const payload = JSON.parse(jsonPayload);
-        console.log('Decoded token payload:', payload);
 
         // Check if token is expired
         if (payload.exp && Date.now() >= payload.exp * 1000) {
-            console.log('Token is expired');
             return null;
         }
 

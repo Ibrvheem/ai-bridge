@@ -14,8 +14,6 @@ export async function uploadSentences(payload: FormData) {
     }
 }
 
-
-
 export async function uploadStats() {
     try {
         const response = await api.get('sentences/upload-stats', {
