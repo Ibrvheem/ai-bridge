@@ -6,7 +6,6 @@ import {
   Shield,
   TrendingUp,
 } from "lucide-react";
-import { useState, useEffect } from "react";
 
 interface BiasResultProps {
   result: {
@@ -20,11 +19,6 @@ interface BiasResultProps {
 
 export function BiasResult({ result }: BiasResultProps) {
   const { bias_category, confidence, has_bias, message, text } = result;
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const getBadgeStyle = (category: string) => {
     const styles: Record<string, string> = {
@@ -57,9 +51,7 @@ export function BiasResult({ result }: BiasResultProps) {
 
   return (
     <div
-      className={`relative max-w-3xl mx-auto mt-8 transition-all duration-700 ease-out ${
-        mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      }`}
+      className={`relative max-w-3xl mx-auto mt-8 transition-all duration-700 ease-out opacity-100 translate-y-0`}
     >
       {/* Glassmorphic Card */}
       <div className="relative group">
@@ -155,7 +147,7 @@ export function BiasResult({ result }: BiasResultProps) {
                     <div
                       className="h-full bg-gradient-to-r from-amber-500 to-red-500 rounded-full transition-all duration-1000 ease-out"
                       style={{
-                        width: mounted ? `${confidencePercentage}%` : "0%",
+                        width: `${confidencePercentage}%`,
                       }}
                     ></div>
                   </div>
