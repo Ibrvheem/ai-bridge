@@ -1,26 +1,31 @@
-import * as React from "react"
-import { type LucideIcon } from "lucide-react"
+import * as React from "react";
+import { type LucideIcon } from "lucide-react";
 
 import {
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 export function NavSecondary({
   items,
+  groupLabel,
   ...props
 }: {
+  groupLabel?: string;
   items: {
-    title: string
-    url: string
-    icon: LucideIcon
-  }[]
+    title: string;
+    url: string;
+    icon: LucideIcon;
+  }[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (
     <SidebarGroup {...props}>
+      {groupLabel && <SidebarGroupLabel>{groupLabel}</SidebarGroupLabel>}
+
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => (
@@ -36,5 +41,5 @@ export function NavSecondary({
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
-  )
+  );
 }

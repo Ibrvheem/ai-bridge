@@ -9,6 +9,7 @@ import {
   Send,
   Settings2,
   SquareTerminal,
+  WholeWord,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -49,7 +50,37 @@ const data = {
       ],
     },
     {
-      title: "Models",
+      title: "Sentences",
+      url: "/sentences",
+      icon: WholeWord,
+    },
+    {
+      title: "Settings",
+      url: "/settings",
+      icon: Settings2,
+      items: [
+        {
+          title: "Languages",
+          url: "/settings/languages",
+        },
+        // {
+        //   title: "General",
+        //   url: "/settings/general",
+        // },
+        // {
+        //   title: "Team",
+        //   url: "/settings/team",
+        // },
+        // {
+        //   title: "Billing",
+        //   url: "/settings/billing",
+        // },
+      ],
+    },
+  ],
+  wip: [
+    {
+      title: "Models - WIP",
       url: "#",
       icon: Bot,
       items: [
@@ -68,7 +99,7 @@ const data = {
       ],
     },
     {
-      title: "Documentation",
+      title: "Documentation - WIP",
       url: "#",
       icon: BookOpen,
       items: [
@@ -87,29 +118,6 @@ const data = {
         {
           title: "Changelog",
           url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "/settings",
-      icon: Settings2,
-      items: [
-        {
-          title: "Languages",
-          url: "/settings/languages",
-        },
-        {
-          title: "General",
-          url: "/settings/general",
-        },
-        {
-          title: "Team",
-          url: "/settings/team",
-        },
-        {
-          title: "Billing",
-          url: "/settings/billing",
         },
       ],
     },
@@ -155,7 +163,16 @@ export function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavSecondary
+          items={data.wip}
+          className="mt-auto"
+          groupLabel="Nice to Have"
+        />
+        <NavSecondary
+          items={data.navSecondary}
+          className="mt-auto"
+          groupLabel="Nice to Have"
+        />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />
