@@ -1,7 +1,12 @@
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, CheckCircle2, Tag } from "lucide-react";
-import clsx from "clsx";
-
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Tag,
+  Shield,
+  TrendingUp,
+} from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface BiasResultProps {
   result: {
@@ -15,81 +20,178 @@ interface BiasResultProps {
 
 export function BiasResult({ result }: BiasResultProps) {
   const { bias_category, confidence, has_bias, message, text } = result;
+  const [mounted, setMounted] = useState(false);
 
-  // Glassmorphism + dark theme badge colors
-  const getBadgeColor = (category: string) => {
-    const colors: Record<string, string> = {
-      Gender: "bg-gradient-to-r from-purple-700/80 to-purple-400/60 text-white border-purple-500/60",
-      "Race / ethnicity": "bg-gradient-to-r from-blue-700/80 to-blue-400/60 text-white border-blue-500/60",
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const getBadgeStyle = (category: string) => {
+    const styles: Record<string, string> = {
+      Gender: "bg-purple-500/20 text-purple-300 border-purple-500/30",
+      "Race / ethnicity": "bg-blue-500/20 text-blue-300 border-blue-500/30",
       "Age (young / middle / elderly; also continuous age ranges)":
-        "bg-gradient-to-r from-green-700/80 to-green-400/60 text-white border-green-500/60",
+        "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
       "Disability (visible, invisible, physical, cognitive)":
-        "bg-gradient-to-r from-orange-700/80 to-orange-400/60 text-white border-orange-500/60",
-      "Religion / belief system": "bg-gradient-to-r from-pink-700/80 to-pink-400/60 text-white border-pink-500/60",
+        "bg-orange-500/20 text-orange-300 border-orange-500/30",
+      "Religion / belief system":
+        "bg-pink-500/20 text-pink-300 border-pink-500/30",
       "Nationality / immigration status":
-        "bg-gradient-to-r from-indigo-700/80 to-indigo-400/60 text-white border-indigo-500/60",
+        "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
       "Socioeconomic status (income, education)":
-        "bg-gradient-to-r from-amber-700/80 to-amber-400/60 text-white border-amber-500/60",
+        "bg-amber-500/20 text-amber-300 border-amber-500/30",
     };
-    return colors[category] || "bg-gradient-to-r from-slate-800/80 to-slate-600/60 text-white border-slate-500/60";
+    return (
+      styles[category] || "bg-slate-500/20 text-slate-300 border-slate-500/30"
+    );
   };
+
+  const getGradient = () => {
+    if (has_bias) {
+      return "from-amber-500/10 via-transparent to-red-500/10";
+    }
+    return "from-emerald-500/10 via-transparent to-teal-500/10";
+  };
+
+  const confidencePercentage = confidence * 100;
 
   return (
     <div
-      className={clsx(
-        "rounded-2xl border border-slate-800/60 bg-gradient-to-br from-slate-900/80 to-slate-800/80 backdrop-blur-xl shadow-2xl max-w-2xl mx-auto mt-10 p-8",
-        "transition-all duration-300",
-        has_bias ? "ring-2 ring-amber-500/40" : "ring-2 ring-green-500/30"
-      )}
-      style={{ boxShadow: has_bias ? "0 8px 32px 0 rgba(255, 193, 7, 0.15)" : "0 8px 32px 0 rgba(34,197,94,0.10)" }}
+      className={`relative max-w-3xl mx-auto mt-8 transition-all duration-700 ease-out ${
+        mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+      }`}
     >
-      <div className="flex items-center gap-4 mb-4">
-        <div className={clsx(
-          "rounded-full p-2 flex items-center justify-center",
-          has_bias ? "bg-amber-700/20" : "bg-green-700/20"
-        )}>
-          {has_bias ? (
-            <AlertTriangle className="h-7 w-7 text-amber-400 drop-shadow" />
-          ) : (
-            <CheckCircle2 className="h-7 w-7 text-green-400 drop-shadow" />
-          )}
+      {/* Glassmorphic Card */}
+      <div className="relative group">
+        {/* Animated gradient border effect */}
+        <div
+          className={`absolute -inset-0.5 bg-gradient-to-r ${
+            has_bias
+              ? "from-amber-500 via-red-500 to-pink-500"
+              : "from-emerald-500 via-teal-500 to-cyan-500"
+          } rounded-2xl opacity-30 blur-lg group-hover:opacity-50 transition duration-500`}
+        ></div>
+
+        {/* Main card */}
+        <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
+          {/* Background gradient overlay */}
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${getGradient()} opacity-50 rounded-2xl pointer-events-none`}
+          ></div>
+
+          {/* Content */}
+          <div className="relative z-10">
+            {/* Header Section */}
+            <div className="flex items-start justify-between mb-6">
+              <div className="flex items-center gap-4">
+                <div
+                  className={`p-3 rounded-xl ${
+                    has_bias
+                      ? "bg-amber-500/20 ring-1 ring-amber-500/30"
+                      : "bg-emerald-500/20 ring-1 ring-emerald-500/30"
+                  }`}
+                >
+                  {has_bias ? (
+                    <AlertTriangle className="h-6 w-6 text-amber-400" />
+                  ) : (
+                    <CheckCircle2 className="h-6 w-6 text-emerald-400" />
+                  )}
+                </div>
+                <div>
+                  <h3
+                    className={`text-xl font-bold ${
+                      has_bias ? "text-amber-300" : "text-emerald-300"
+                    }`}
+                  >
+                    {has_bias ? "Bias Detected" : "No Bias Detected"}
+                  </h3>
+                  <p className="text-sm text-slate-400 mt-1">
+                    Analysis Complete
+                  </p>
+                </div>
+              </div>
+
+              {has_bias && (
+                <Badge
+                  className={`${getBadgeStyle(
+                    bias_category
+                  )} border px-3 py-1.5 text-xs font-semibold flex items-center gap-1.5 backdrop-blur-sm`}
+                >
+                  <Tag className="h-3.5 w-3.5" />
+                  {bias_category}
+                </Badge>
+              )}
+            </div>
+
+            {/* Input Text Display */}
+            <div className="mb-6 p-4 bg-black/30 rounded-xl border border-white/5 backdrop-blur-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <Shield className="h-4 w-4 text-slate-500" />
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  Analyzed Text
+                </span>
+              </div>
+              <p className="text-slate-200 leading-relaxed">{text}</p>
+            </div>
+
+            {/* Results Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              {/* Confidence Score */}
+              {has_bias && (
+                <div className="p-4 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-amber-400" />
+                      <span className="text-sm font-semibold text-slate-300">
+                        Confidence Score
+                      </span>
+                    </div>
+                    <span className="text-xl font-bold text-amber-300">
+                      {confidencePercentage.toFixed(1)}%
+                    </span>
+                  </div>
+                  {/* Animated progress bar */}
+                  <div className="h-2 bg-slate-800/50 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-amber-500 to-red-500 rounded-full transition-all duration-1000 ease-out"
+                      style={{
+                        width: mounted ? `${confidencePercentage}%` : "0%",
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              )}
+
+              {/* Analysis Message */}
+              <div
+                className={`p-4 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors ${
+                  !has_bias ? "md:col-span-2" : ""
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5">
+                    <div className="h-2 w-2 rounded-full bg-teal-400 animate-pulse"></div>
+                  </div>
+                  <div>
+                    <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                      Analysis
+                    </span>
+                    <p className="text-sm text-slate-300 leading-relaxed">
+                      {message}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Info */}
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs text-slate-500 text-center">
+                Powered by AI-BRIDGE Advanced Bias Detection Engine
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-1">
-          <span className={clsx(
-            "text-lg font-bold tracking-tight",
-            has_bias ? "text-amber-200" : "text-green-200"
-          )}>
-            {has_bias ? "Bias Detected" : "No Bias Detected"}
-          </span>
-          <span className="text-xs text-slate-400 font-mono">
-            {has_bias ? message : "No bias was detected in the input."}
-          </span>
-        </div>
-        {has_bias && (
-          <Badge className={clsx(
-            "ml-auto border-2 px-3 py-1 text-sm font-semibold shadow-md",
-            getBadgeColor(bias_category)
-          )}>
-            <Tag className="h-4 w-4 mr-1 -ml-1" />
-            {bias_category}
-          </Badge>
-        )}
-      </div>
-      <div className="mb-4">
-        <div className="rounded-lg bg-slate-900/70 border border-slate-700 px-4 py-3 text-slate-100 text-base font-mono shadow-inner">
-          <span className="text-slate-400 font-medium mr-2">Input:</span>
-          <span className="text-slate-100">{text}</span>
-        </div>
-      </div>
-      <div className="flex flex-wrap items-center gap-4">
-        {has_bias && (
-          <span className="text-xs text-amber-200 bg-amber-700/20 px-2 py-1 rounded font-mono tracking-wide">
-            Confidence: <span className="font-bold">{(confidence * 100).toFixed(2)}%</span>
-          </span>
-        )}
-        <span className="text-xs text-slate-400 font-mono">
-          {has_bias ? "Review and take action if necessary." : "Great! No bias found."}
-        </span>
       </div>
     </div>
   );

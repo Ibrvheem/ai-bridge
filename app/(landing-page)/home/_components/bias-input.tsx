@@ -32,7 +32,7 @@ export function BiasInput({ placeholders }: BiasInputProps) {
   };
 
   return (
-    <>
+    <div className="w-full min-h-[50vh] ">
       <PlaceholdersAndVanishInput
         placeholders={placeholders}
         onChange={handleChange}
@@ -40,6 +40,6 @@ export function BiasInput({ placeholders }: BiasInputProps) {
       />
 
       {result && <BiasResult result={result} />}
-    </>
+    </div>
   );
 }
