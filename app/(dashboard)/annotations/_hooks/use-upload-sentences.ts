@@ -40,7 +40,7 @@ export function useUploadSentences() {
 
 
             const response = await uploadSentences(formData)
-
+            console.log("Upload response:", response)
 
 
             toast.success("File uploaded successfully!")

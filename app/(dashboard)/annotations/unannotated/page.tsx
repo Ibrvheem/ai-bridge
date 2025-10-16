@@ -1,21 +1,7 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Upload, FileText, Clock, MessageSquare } from "lucide-react";
+import { Upload, FileText, Clock, MessageSquare, Layers } from "lucide-react";
 import { UploadSentencesModal } from "../_components";
 import { getLanguages } from "../../settings/languages/service";
 import dayjs from "@/lib/dayjs";
@@ -26,6 +12,9 @@ import { SentenceSchema } from "../../sentences/types";
 export default async function UnannotatedPage() {
   const sentences: SentenceSchema[] = await getUnannotatedSentences();
   const languages = await getLanguages();
+  const uniqueLanguages = new Set(
+    sentences.map((s) => s.language).filter(Boolean)
+  ).size;
 
   return (
     <div className="space-y-6">
@@ -39,7 +28,6 @@ export default async function UnannotatedPage() {
             Manage and upload sentences for annotation
           </p>
         </div>
-
         <UploadSentencesModal languages={languages}>
           <Button>
             <Upload className="mr-2 h-4 w-4" />
@@ -49,7 +37,7 @@ export default async function UnannotatedPage() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -62,80 +50,105 @@ export default async function UnannotatedPage() {
             <p className="text-xs text-muted-foreground">Awaiting annotation</p>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Languages</CardTitle>
-            <Badge variant="secondary">
-              {new Set(sentences.map((s) => s.language)).size}
-            </Badge>
+            <Badge variant="secondary">{uniqueLanguages}</Badge>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {new Set(sentences.map((s) => s.language)).size}
-            </div>
+            <div className="text-2xl font-bold">{uniqueLanguages}</div>
             <p className="text-xs text-muted-foreground">Different languages</p>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {/* {sentences.filter((s) => s.status === "pending").length} */}
-            </div>
+            <div className="text-2xl font-bold">{sentences.length}</div>
             <p className="text-xs text-muted-foreground">
               Ready for annotation
             </p>
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Uploads</CardTitle>
+            <Layers className="h-4 w-4 text-blue-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{languages.length}</div>
+            <p className="text-xs text-muted-foreground">Languages available</p>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Sentences Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Sentences List</CardTitle>
-          <CardDescription>
-            All sentences waiting for annotation
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      {/* Sentences Grid */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-slate-900">
+            All Sentences ({sentences.length})
+          </h2>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-500">
+              {sentences.length} pending annotation
+            </span>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-4">
           {sentences.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Language</TableHead>
-                  <TableHead>Sentence</TableHead>
-                  <TableHead>Original Content</TableHead>
-                  <TableHead>Upload Date</TableHead>
-                  <TableHead>Uploaded By</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sentences.map((sentence) => (
-                  <TableRow key={sentence._id}>
-                    <TableCell className="font-medium">
-                      #{sentence._id.slice(-5)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{sentence.language}</Badge>
-                    </TableCell>
-                    <TableCell className="max-w-md truncate">
-                      {sentence.sentence}
-                    </TableCell>
-                    <TableCell>{sentence.original_content}</TableCell>
-                    <TableCell>
-                      {dayjs(sentence.created_at).fromNow()}
-                    </TableCell>
-                    <TableCell>{sentence.user?.email}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            sentences.map((sentence) => (
+              <Card
+                key={sentence._id}
+                className="p-5 hover:shadow-md transition-all duration-200 border-slate-200 group"
+              >
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between gap-4">
+                      <p className="text-base text-slate-900 leading-relaxed flex-1">
+                        {sentence.sentence}
+                      </p>
+                      <Badge className="bg-amber-50 text-amber-700 border-amber-200 border shrink-0">
+                        Pending
+                      </Badge>
+                    </div>
+                    {sentence.original_content && (
+                      <div className="rounded-md bg-slate-50 border border-slate-200 p-3">
+                        <p className="text-xs font-medium text-slate-600 mb-1">
+                          Original Content:
+                        </p>
+                        <p className="text-sm text-slate-700">
+                          {sentence.original_content}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                    <div className="flex flex-wrap items-center gap-4">
+                      <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                        <span className="font-mono text-slate-500">ID:</span>
+                        <span>#{sentence._id.slice(-5)}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                        <Clock className="h-3.5 w-3.5" />
+                        <span>{dayjs(sentence.created_at).fromNow()}</span>
+                      </div>
+                      {sentence.language && (
+                        <Badge variant="outline" className="text-xs">
+                          {sentence.language.toUpperCase()}
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-slate-500">
+                        {sentence.user?.email}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))
           ) : (
             <div className="py-8">
               <EmptyState
@@ -152,8 +165,8 @@ export default async function UnannotatedPage() {
               </EmptyState>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Footer */}
       <footer className="text-center py-6 border-t">
