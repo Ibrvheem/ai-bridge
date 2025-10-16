@@ -63,7 +63,7 @@ export default async function AnnotationsPage() {
       </div>
 
       {/* Statistics Cards */}
-      <div className=" gap-4 md:grid-cols-4 hidden">
+      <div className=" gap-4 md:grid-cols-4 grid">
         <Card className="border-slate-200 bg-white">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-700">
