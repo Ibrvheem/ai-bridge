@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "AI Bridge – Sentence Annotation Platform",
   description:
-    "AI Bridge is a multilingual sentence annotation platform for bias categorization, bulk CSV/XLSX uploads, and document-based batch operations.",
+    "AI Bridge is a multilingual sentence annotation platform for bias categorization,",
 };
 
 export default function RootLayout({
