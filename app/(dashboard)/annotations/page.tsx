@@ -30,10 +30,11 @@ import { getUploadHistory, uploadStats } from "./services";
 import dayjs from "@/lib/dayjs";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { UploadHistorySchema } from "./types";
 
 export default async function AnnotationsPage() {
   const upload_stats = await uploadStats();
-  const upload_history = await getUploadHistory();
+  const upload_history: UploadHistorySchema[] = await getUploadHistory();
 
   // Extract stats from the first item (aggregated stats)
   const stats = upload_stats[0] || {

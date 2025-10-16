@@ -10,3 +10,18 @@ export const uploadCSVSchema = z.object({
     language: z.string(),
 })
 
+
+export const uploadHistorySchema = z.object({
+    _id: z.string(),
+    original_filename: z.string(),
+    file_size: z.number(),
+    status: z.enum(["completed", "failed", "processing"]),
+    total_rows: z.number(),
+    successful_inserts: z.number(),
+    duplicate_count: z.number(),
+    created_at: z.string(),
+    download_url: z.string().url(),
+});
+
+export type UploadHistorySchema = z.infer<typeof uploadHistorySchema>;
+
