@@ -22,7 +22,7 @@ export default async function HomePage() {
   ];
 
   return (
-    <div className="p-4 bg-black text-white h-screen relative">
+    <div className="p-4 bg-black text-white min-h-screen relative">
       <div className="max-w-5xl mx-auto">
         <div className="flex flex-row items-center justify-between space-y-2 gap-2">
           <div className="flex flex-row items-center space-x-2">
@@ -53,7 +53,7 @@ export default async function HomePage() {
         </div>
       </div>
 
-      <footer className="absolute bottom-0 w-full text-center p-4 border-t border-white/10 text-sm text-white/50">
+      <footer className="md:block hidden absolute bottom-0 w-full text-center p-4 border-t border-white/10 text-sm text-white/50">
         Powered by StudyLabs
       </footer>
     </div>
