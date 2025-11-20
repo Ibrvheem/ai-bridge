@@ -45,7 +45,7 @@ export default async function HomePage() {
           )}
         </div>
 
-        <div className="min-h-[40vh] md:pt-60 pt-20">
+        <div className="min-h-[40vh] md:pt-20 pt-20">
           <h2 className="my-4 text-3xl text-center sm:text-5xl text-white">
             Analyze your sentence for bias
           </h2>
