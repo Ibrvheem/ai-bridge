@@ -2,8 +2,9 @@
 
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import { useState } from "react";
-import { findBias } from "../service";
+import { findBias, findBiasModelS } from "../service";
 import { BiasResult } from "./bias-result";
+import { Tabs } from "@/components/ui/tabs";
 
 function BiasResultSkeleton() {
   return (
@@ -73,6 +74,8 @@ export function BiasInput({ placeholders }: BiasInputProps) {
   const [text, setText] = useState("");
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [selectedModel, setSelectedModel] = useState("default");
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value);
   };
@@ -82,10 +85,14 @@ export function BiasInput({ placeholders }: BiasInputProps) {
       e.preventDefault();
       setLoading(true);
       setResult(null);
-      const response = await findBias({ text });
+      const response =
+        selectedModel == "default"
+          ? await findBias({ text })
+          : await findBiasModelS({ text });
       setText(""); // Clear input after submission
       setResult(response);
       setLoading(false);
+      console.log("Bias detection response:", response);
       return response;
     } catch (error) {
       setLoading(false);
@@ -93,8 +100,29 @@ export function BiasInput({ placeholders }: BiasInputProps) {
     }
   };
 
+  const tabs = [
+    {
+      title: "Model 1.0.0",
+      value: "default",
+    },
+    {
+      title: "Model 1.0.1",
+      value: "soto",
+    },
+  ];
+
   return (
     <div className="w-full min-h-[50vh] ">
+      <div className="flex justify-center mb-6">
+        <Tabs
+          tabs={tabs}
+          containerClassName="bg-slate-900/50 backdrop-blur-sm rounded-full p-1 border border-slate-800 w-fit"
+          activeTabClassName="bg-gradient-to-r from-slate-700 to-slate-800"
+          tabClassName="text-sm font-medium transition-all"
+          onTabChange={(value) => setSelectedModel(value)}
+        />
+      </div>
+
       <PlaceholdersAndVanishInput
         placeholders={placeholders}
         onChange={handleChange}
