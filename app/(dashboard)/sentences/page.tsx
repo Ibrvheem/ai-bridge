@@ -2,17 +2,18 @@ import { FileText, AlertCircle, CheckCircle2, Layers } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SentenceCard } from "./_components";
 import { getUnannotatedSentences } from "./services";
-import { SentenceSchema } from "./types";
+import { DataCollection } from "./types";
 
 export default async function SentencesPage() {
-  const sentences: SentenceSchema[] = await getUnannotatedSentences();
+  const sentences: DataCollection[] = await getUnannotatedSentences();
 
-  // Calculate statistics
   const totalSentences = sentences.length;
-  const annotatedCount = sentences.filter((s) => s.bias_category).length;
+  const annotatedCount = sentences.filter(
+    (s) => "bias_label" in s && s.bias_label !== null,
+  ).length;
   const unannotatedCount = totalSentences - annotatedCount;
   const uniqueLanguages = new Set(
-    sentences.map((s) => s.language).filter(Boolean)
+    sentences.map((s) => s.language).filter(Boolean),
   ).size;
 
   return (

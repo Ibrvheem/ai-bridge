@@ -35,19 +35,66 @@ export function UploadSentencesModal({
   }));
 
   const downloadSampleExcel = () => {
-    // Create a sample CSV content
+    const headers = [
+      "language",
+      "script",
+      "country",
+      "region_dialect",
+      "source_type",
+      "source_ref",
+      "collection_date",
+      "text",
+      "domain",
+      "topic",
+      "theme",
+      "sensitive_characteristic",
+      "safety_flag",
+      "pii_removed",
+      "notes",
+    ];
     const sampleData = [
-      ["sentence", "original_content", "language"],
-      ["This is a sample sentence.", "Original content here", "en"],
-      ["Another example sentence.", "More original content", "en"],
-      ["Third example.", "Original text", "en"],
+      headers,
+      [
+        "hausa",
+        "latin",
+        "Nigeria",
+        "kano",
+        "community",
+        "",
+        "2026-01-25",
+        "Sample text in Hausa language here.",
+        "media_and_online",
+        "news",
+        "public_interest",
+        "",
+        "safe",
+        "true",
+        "",
+      ],
+      [
+        "hausa",
+        "latin",
+        "Nigeria",
+        "standard",
+        "media",
+        "https://example.com",
+        "2026-01-25",
+        "Another sample sentence.",
+        "culture_and_religion",
+        "traditions",
+        "stereotypes",
+        "gender",
+        "safe",
+        "true",
+        "Sample note",
+      ],
     ];
     const csvContent = sampleData.map((row) => row.join(",")).join("\n");
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "sample_sentences.csv";
+    link.download = "data-collection-template.csv";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -89,9 +136,9 @@ export function UploadSentencesModal({
             {/* Language selection */}
             <ControlledSelect
               name="language"
-              label="Language"
+              label="Default Language (Optional)"
               placeholder="Select a language"
-              description="Leave empty to set during annotation"
+              description="Only needed if CSV doesn't include language column"
               values={formattedLanguages}
               className="w-full"
             />
