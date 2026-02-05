@@ -4,9 +4,9 @@ import * as React from "react";
 import {
   BookOpen,
   Bot,
+  FileText,
   GalleryVerticalEnd,
   LifeBuoy,
-  PlayCircle,
   Send,
   Settings2,
   SquareTerminal,
@@ -34,31 +34,17 @@ const data = {
   },
   navMain: [
     {
-      title: "Sessions",
-      url: "/sessions",
-      icon: PlayCircle,
-      isActive: true,
-      items: [
-        {
-          title: "All Sessions",
-          url: "/sessions",
-        },
-        {
-          title: "New Session",
-          url: "/sessions/new",
-        },
-      ],
-    },
-    {
       title: "Annotations",
       url: "/annotations",
       icon: SquareTerminal,
-      items: [
-        {
-          title: "Upload Sentences",
-          url: "/annotations/unannotated",
-        },
-      ],
+      isActive: true,
+      items: [],
+    },
+    {
+      title: "Sentences",
+      url: "/sentences",
+      icon: FileText,
+      items: [],
     },
     {
       title: "Settings",

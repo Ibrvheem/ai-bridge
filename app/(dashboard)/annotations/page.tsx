@@ -5,48 +5,29 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  BookOpen,
-  FileText,
-  Target,
-  Upload,
-  CheckCircle2,
-  AlertTriangle,
-  Download,
-  Clock,
-  FolderOpen,
-} from "lucide-react";
-import Link from "next/link";
-import { getUploadHistory, uploadStats } from "./services";
-import dayjs from "@/lib/dayjs";
 import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/components/ui/empty-state";
-import { UploadHistorySchema } from "./types";
+import { Upload, Download, FileText, CheckCircle2, Clock } from "lucide-react";
+import dayjs from "@/lib/dayjs";
+import {
+  getUnannotatedSentences,
+  getExportStats,
+  getExportHistory,
+} from "./services";
+import { getLanguages } from "../settings/languages/service";
+import { Annotator, ExportModal, UploadSentencesModal } from "./_components";
+import { ExportRecord } from "./types";
 
 export default async function AnnotationsPage() {
-  const upload_stats = await uploadStats();
-  const upload_history: UploadHistorySchema[] = await getUploadHistory();
+  const [sentences, exportStats, exportHistory, languages] = await Promise.all([
+    getUnannotatedSentences(),
+    getExportStats(),
+    getExportHistory(),
+    getLanguages(),
+  ]);
 
-  // Extract stats from the first item (aggregated stats)
-  const stats = upload_stats[0] || {
-    total_documents: 0,
-    total_sentences_processed: 0,
-    total_successful_inserts: 0,
-    total_duplicates: 0,
-    total_errors: 0,
-    completed_uploads: 0,
-    failed_uploads: 0,
-    processing_uploads: 0,
-  };
+  const unannotatedCount = Array.isArray(sentences) ? sentences.length : 0;
+  const exportableCount = exportStats?.exportable_count || 0;
+  const totalExported = exportStats?.total_exported || 0;
 
   return (
     <div className="space-y-6">
@@ -54,51 +35,43 @@ export default async function AnnotationsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            Annotations Dashboard
+            Annotate Sentences
           </h1>
           <p className="text-slate-600">
-            Manage and track sentence annotation progress
+            Annotate sentences for bias detection training data
           </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <UploadSentencesModal languages={languages}>
+            <Button variant="outline">
+              <Upload className="h-4 w-4 mr-2" />
+              Upload CSV
+            </Button>
+          </UploadSentencesModal>
+          <ExportModal exportableCount={exportableCount}>
+            <Button disabled={exportableCount === 0}>
+              <Download className="h-4 w-4 mr-2" />
+              Export ({exportableCount})
+            </Button>
+          </ExportModal>
         </div>
       </div>
 
-      {/* Statistics Cards */}
-      <div className=" gap-4 md:grid-cols-4 grid">
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-3">
         <Card className="border-slate-200 bg-white">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-700">
-              Total Sentences
+              To Annotate
             </CardTitle>
-            <FileText className="h-4 w-4 text-slate-500" />
+            <Clock className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-slate-900">
-              {stats.total_sentences_processed}
-            </div>
-            <p className="text-xs text-slate-500">Processed sentences</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-slate-200 bg-white">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-700">
-              Successful
-            </CardTitle>
-            <Target className="h-4 w-4 text-slate-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-slate-900">
-              {stats.total_successful_inserts}
+              {unannotatedCount}
             </div>
             <p className="text-xs text-slate-500">
-              {stats.total_sentences_processed > 0
-                ? Math.round(
-                    (stats.total_successful_inserts /
-                      stats.total_sentences_processed) *
-                      100
-                  )
-                : 0}
-              % success rate
+              Sentences awaiting annotation
             </p>
           </CardContent>
         </Card>
@@ -106,248 +79,116 @@ export default async function AnnotationsPage() {
         <Card className="border-slate-200 bg-white">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-700">
-              Duplicates
+              Ready to Export
             </CardTitle>
-            <BookOpen className="h-4 w-4 text-slate-500" />
+            <FileText className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-900">
-              {stats.total_duplicates}
+            <div className="text-2xl font-bold text-green-600">
+              {exportableCount}
             </div>
-            <p className="text-xs text-slate-500">Duplicate entries found</p>
+            <p className="text-xs text-slate-500">
+              Annotated, not yet exported
+            </p>
           </CardContent>
         </Card>
 
         <Card className="border-slate-200 bg-white">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-700">
-              Documents
+              Total Exported
             </CardTitle>
-            <Upload className="h-4 w-4 text-slate-500" />
+            <CheckCircle2 className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-slate-900">
-              {stats.total_documents}
+              {totalExported}
             </div>
-            <p className="text-xs text-slate-500">
-              {stats.completed_uploads} completed
-            </p>
+            <p className="text-xs text-slate-500">Sentences already exported</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Navigation Cards */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="cursor-pointer hover:shadow-md transition-shadow border-slate-200 bg-white">
-          <Link href="/annotations/unannotated">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg text-slate-900">
-                  Un-annotated Sentences
-                </CardTitle>
-                <Badge
-                  variant="secondary"
-                  className="bg-slate-100 text-slate-700"
-                >
-                  {stats.total_successful_inserts} available
-                </Badge>
-              </div>
-              <CardDescription className="text-slate-600">
-                View and manage sentences that are waiting for annotation
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-slate-500">
-                Upload new sentences, view pending items, and start the
-                annotation process.
-              </p>
-            </CardContent>
-          </Link>
-        </Card>
-
-        <Card className="cursor-pointer hover:shadow-md transition-shadow border-slate-200 bg-white">
-          <Link href="/annotations/annotated">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg text-slate-900">
-                  Annotated Sentences
-                </CardTitle>
-                <Badge
-                  variant="outline"
-                  className="border-slate-300 text-slate-700"
-                >
-                  Coming soon
-                </Badge>
-              </div>
-              <CardDescription className="text-slate-600">
-                Review and manage sentences that have been annotated
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-slate-500">
-                View completed annotations, edit existing labels, and export
-                annotated data.
-              </p>
-            </CardContent>
-          </Link>
-        </Card>
-      </div>
-
-      {/* Upload History */}
-      <Card className="border-slate-200 bg-white">
-        <CardHeader>
-          <CardTitle className="text-slate-900">Upload History</CardTitle>
-          <CardDescription className="text-slate-600">
-            Recent file uploads and processing results
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {upload_history.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow className="border-slate-200">
-                  <TableHead className="text-slate-700">File</TableHead>
-                  <TableHead className="text-slate-700">Status</TableHead>
-                  <TableHead className="text-slate-700">Processed</TableHead>
-                  <TableHead className="text-slate-700">Success</TableHead>
-                  <TableHead className="text-slate-700">Duplicates</TableHead>
-                  <TableHead className="text-slate-700">Upload Date</TableHead>
-                  <TableHead className="text-slate-700">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {upload_history.map((upload) => (
-                  <TableRow key={upload._id} className="border-slate-200">
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <FileText className="h-4 w-4 text-slate-500" />
-                        <div>
-                          <p className="font-medium text-slate-900 text-sm">
-                            {upload.original_filename}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {upload.file_size < 1024 * 1024
-                              ? `${(upload.file_size / 1024).toFixed(1)} KB`
-                              : upload.file_size < 1024 * 1024 * 1024
-                              ? `${(upload.file_size / (1024 * 1024)).toFixed(
-                                  1
-                                )} MB`
-                              : `${(
-                                  upload.file_size /
-                                  (1024 * 1024 * 1024)
-                                ).toFixed(1)} GB`}
-                          </p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        {upload.status === "completed" ? (
-                          <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                        ) : upload.status === "failed" ? (
-                          <AlertTriangle className="h-4 w-4 text-red-600" />
-                        ) : (
-                          <Clock className="h-4 w-4 text-amber-600" />
-                        )}
-                        <Badge
-                          variant={
-                            upload.status === "completed"
-                              ? "default"
-                              : "secondary"
-                          }
-                          className={
-                            upload.status === "completed"
-                              ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-100"
-                              : upload.status === "failed"
-                              ? "bg-red-100 text-red-800 hover:bg-red-100"
-                              : "bg-amber-100 text-amber-800 hover:bg-amber-100"
-                          }
-                        >
-                          {upload.status}
-                        </Badge>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-slate-900 font-medium">
-                        {upload.total_rows}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-emerald-700 font-medium">
-                          {upload.successful_inserts}
-                        </span>
-                        {upload.total_rows > 0 && (
-                          <Badge
-                            variant="outline"
-                            className="text-xs border-emerald-200 text-emerald-700"
-                          >
-                            {Math.round(
-                              (upload.successful_inserts / upload.total_rows) *
-                                100
-                            )}
-                            %
-                          </Badge>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-amber-700 font-medium">
-                        {upload.duplicate_count}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm">
-                        <p className="text-slate-900">
-                          {dayjs(upload.created_at).format("MMM D, YYYY")}
-                        </p>
-                        <p className="text-slate-500 text-xs">
-                          {dayjs(upload.created_at).fromNow()}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <a
-                        href={upload.download_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border-slate-300 text-slate-700 hover:bg-slate-50"
-                        >
-                          <Download className="h-3 w-3 " />
-                        </Button>
-                      </a>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <div className="py-8">
-              <EmptyState
-                icon={FolderOpen}
-                title="No uploads yet"
-                description="Upload your first CSV file to see upload history and processing results here."
-                action={{
-                  label: "Upload Sentences",
-                  href: "/annotations/unannotated",
-                }}
-              />
+      {/* Annotator */}
+      {unannotatedCount > 0 ? (
+        <Annotator sentences={sentences} />
+      ) : (
+        <Card className="border-slate-200">
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <CheckCircle2 className="h-12 w-12 text-green-500 mb-4" />
+            <h3 className="text-lg font-medium text-slate-900">
+              All caught up!
+            </h3>
+            <p className="text-sm text-slate-600 mt-1 text-center max-w-md">
+              No sentences waiting for annotation. Upload more sentences to
+              continue.
+            </p>
+            <div className="flex gap-3 mt-4">
+              <UploadSentencesModal languages={languages}>
+                <Button variant="outline">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload Sentences
+                </Button>
+              </UploadSentencesModal>
+              {exportableCount > 0 && (
+                <ExportModal exportableCount={exportableCount}>
+                  <Button>
+                    <Download className="h-4 w-4 mr-2" />
+                    Export ({exportableCount})
+                  </Button>
+                </ExportModal>
+              )}
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
-      {/* Footer */}
-      <footer className="text-center py-6 border-t border-slate-200">
-        <p className="text-sm text-slate-500">
-          Powered by{" "}
-          <span className="font-semibold text-slate-700">Study Labs</span>
-        </p>
-      </footer>
+      {/* Export History */}
+      {Array.isArray(exportHistory) && exportHistory.length > 0 && (
+        <Card className="border-slate-200">
+          <CardHeader>
+            <CardTitle className="text-lg">Export History</CardTitle>
+            <CardDescription>
+              Previously exported annotation files
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {(exportHistory as ExportRecord[]).slice(0, 5).map((exp) => (
+                <div
+                  key={exp._id}
+                  className="flex items-center justify-between p-3 rounded-lg border border-slate-200 bg-slate-50"
+                >
+                  <div className="flex items-center gap-3">
+                    <FileText className="h-5 w-5 text-slate-500" />
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">
+                        {exp.file_name}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {exp.sentence_count} sentences •{" "}
+                        {dayjs(exp.exported_at).format("MMM D, YYYY h:mm A")}
+                      </p>
+                    </div>
+                  </div>
+                  {exp.download_url && (
+                    <a
+                      href={exp.download_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button variant="outline" size="sm" className="gap-1.5">
+                        <Download className="h-3.5 w-3.5" />
+                        Download
+                      </Button>
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

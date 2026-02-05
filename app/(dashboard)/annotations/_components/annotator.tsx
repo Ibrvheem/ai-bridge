@@ -10,7 +10,6 @@ import {
   ChevronLeft,
   ChevronRight,
   CheckCircle2,
-  AlertCircle,
   Clock,
   SkipForward,
 } from "lucide-react";
@@ -47,12 +46,10 @@ import {
   SentimentTowardReferent,
   Device,
 } from "../types";
-import { annotateSentence, addSentenceToSession } from "../services";
+import { annotateSentence } from "../services";
 
-interface SessionAnnotatorProps {
-  sessionId: string;
+interface AnnotatorProps {
   sentences: DataCollection[];
-  annotatedIds: string[];
   onAnnotationComplete?: () => void;
 }
 
@@ -104,12 +101,7 @@ const deviceOptions = [
   { value: Device.NARRATIVE, label: "Narrative" },
 ];
 
-export function SessionAnnotator({
-  sessionId,
-  sentences,
-  annotatedIds,
-  onAnnotationComplete,
-}: SessionAnnotatorProps) {
+export function Annotator({ sentences, onAnnotationComplete }: AnnotatorProps) {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -118,16 +110,8 @@ export function SessionAnnotator({
   );
   const [sessionStartTime] = useState<number>(Date.now());
 
-  // Filter out already annotated sentences
-  const unannotatedSentences = sentences.filter(
-    (s) => !annotatedIds.includes(s._id),
-  );
-
-  const currentSentence = unannotatedSentences[currentIndex] || null;
-  const totalSentences = unannotatedSentences.length;
-  const annotatedCount = annotatedIds.length;
-  const totalCount = sentences.length;
-  const progress = totalCount > 0 ? (annotatedCount / totalCount) * 100 : 0;
+  const currentSentence = sentences[currentIndex] || null;
+  const totalSentences = sentences.length;
 
   // Time tracking
   const elapsedSeconds = useRef(0);
@@ -196,7 +180,7 @@ export function SessionAnnotator({
         annotation_time_seconds: annotationTimeSeconds,
       };
 
-      // 1. Annotate the sentence
+      // Annotate the sentence
       const result = await annotateSentence(
         currentSentence._id,
         annotationData,
@@ -209,9 +193,6 @@ export function SessionAnnotator({
         setIsSubmitting(false);
         return;
       }
-
-      // 2. Add sentence to session
-      await addSentenceToSession(sessionId, currentSentence._id);
 
       toast.success("Sentence annotated!");
 
@@ -248,10 +229,10 @@ export function SessionAnnotator({
         <CardContent className="flex flex-col items-center justify-center py-12">
           <CheckCircle2 className="h-12 w-12 text-green-500 mb-4" />
           <h3 className="text-lg font-medium text-slate-900">
-            All sentences annotated!
+            No sentences to annotate!
           </h3>
           <p className="text-sm text-slate-600 mt-1">
-            Great work! You can now export your session.
+            Upload more sentences to continue annotating.
           </p>
         </CardContent>
       </Card>
@@ -265,10 +246,9 @@ export function SessionAnnotator({
         <CardContent className="py-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5 text-sm text-slate-600">
-                <CheckCircle2 className="h-4 w-4 text-green-500" />
-                <span>{annotatedCount} annotated</span>
-              </div>
+              <Badge variant="outline" className="text-xs">
+                {currentIndex + 1} of {totalSentences} remaining
+              </Badge>
               <div className="flex items-center gap-1.5 text-sm text-slate-600">
                 <Clock className="h-4 w-4" />
                 <span>{displayTime}</span>
@@ -304,7 +284,10 @@ export function SessionAnnotator({
               </Button>
             </div>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress
+            value={((currentIndex + 1) / totalSentences) * 100}
+            className="h-2"
+          />
         </CardContent>
       </Card>
 
@@ -313,9 +296,6 @@ export function SessionAnnotator({
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg">Sentence to Annotate</CardTitle>
-            <Badge variant="outline" className="text-xs">
-              {currentIndex + 1} of {totalSentences} remaining
-            </Badge>
           </div>
         </CardHeader>
         <CardContent>
