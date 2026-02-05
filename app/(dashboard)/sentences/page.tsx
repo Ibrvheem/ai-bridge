@@ -77,7 +77,7 @@ export default function SentencesPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<string>(
-    searchParams.get("filter") || "all"
+    searchParams.get("filter") || "all",
   );
 
   const fetchSentences = useCallback(
@@ -96,7 +96,7 @@ export default function SentencesPage() {
               totalPages: 0,
               hasNext: false,
               hasPrev: false,
-            }
+            },
           );
         } catch (error) {
           console.error("Error fetching sentences:", error);
@@ -106,7 +106,7 @@ export default function SentencesPage() {
         }
       });
     },
-    []
+    [],
   );
 
   useEffect(() => {
