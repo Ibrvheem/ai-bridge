@@ -6,10 +6,10 @@ import {
   Bot,
   GalleryVerticalEnd,
   LifeBuoy,
+  PlayCircle,
   Send,
   Settings2,
   SquareTerminal,
-  WholeWord,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -34,25 +34,31 @@ const data = {
   },
   navMain: [
     {
-      title: "Annotations",
-      url: "/annotations",
-      icon: SquareTerminal,
+      title: "Sessions",
+      url: "/sessions",
+      icon: PlayCircle,
       isActive: true,
       items: [
         {
-          title: "Unannotated Sentences",
-          url: "/annotations/unannotated",
+          title: "All Sessions",
+          url: "/sessions",
         },
         {
-          title: "Annotated Sentences",
-          url: "/annotations/annotated",
+          title: "New Session",
+          url: "/sessions/new",
         },
       ],
     },
     {
-      title: "Sentences",
-      url: "/sentences",
-      icon: WholeWord,
+      title: "Annotations",
+      url: "/annotations",
+      icon: SquareTerminal,
+      items: [
+        {
+          title: "Upload Sentences",
+          url: "/annotations/unannotated",
+        },
+      ],
     },
     {
       title: "Settings",

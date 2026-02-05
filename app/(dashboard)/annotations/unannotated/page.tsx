@@ -6,14 +6,14 @@ import { UploadSentencesModal } from "../_components";
 import { getLanguages } from "../../settings/languages/service";
 import dayjs from "@/lib/dayjs";
 import { EmptyState } from "@/components/ui/empty-state";
-import { getUnannotatedSentences } from "../../sentences/services";
-import { SentenceSchema } from "../../sentences/types";
+import { getUnannotatedSentences } from "../../sessions/services";
+import { DataCollection } from "../../sessions/types";
 
 export default async function UnannotatedPage() {
-  const sentences: SentenceSchema[] = await getUnannotatedSentences();
+  const sentences: DataCollection[] = await getUnannotatedSentences();
   const languages = await getLanguages();
   const uniqueLanguages = new Set(
-    sentences.map((s) => s.language).filter(Boolean)
+    sentences.map((s) => s.language).filter(Boolean),
   ).size;
 
   return (
@@ -107,19 +107,19 @@ export default async function UnannotatedPage() {
                   <div className="space-y-2">
                     <div className="flex items-start justify-between gap-4">
                       <p className="text-base text-slate-900 leading-relaxed flex-1">
-                        {sentence.sentence}
+                        {sentence.text}
                       </p>
                       <Badge className="bg-amber-50 text-amber-700 border-amber-200 border shrink-0">
                         Pending
                       </Badge>
                     </div>
-                    {sentence.original_content && (
+                    {sentence.notes && (
                       <div className="rounded-md bg-slate-50 border border-slate-200 p-3">
                         <p className="text-xs font-medium text-slate-600 mb-1">
-                          Original Content:
+                          Notes:
                         </p>
                         <p className="text-sm text-slate-700">
-                          {sentence.original_content}
+                          {sentence.notes}
                         </p>
                       </div>
                     )}
@@ -132,18 +132,13 @@ export default async function UnannotatedPage() {
                       </div>
                       <div className="flex items-center gap-1.5 text-xs text-slate-600">
                         <Clock className="h-3.5 w-3.5" />
-                        <span>{dayjs(sentence.created_at).fromNow()}</span>
+                        <span>{dayjs(sentence.collection_date).fromNow()}</span>
                       </div>
                       {sentence.language && (
                         <Badge variant="outline" className="text-xs">
                           {sentence.language.toUpperCase()}
                         </Badge>
                       )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-slate-500">
-                        {sentence.user?.email}
-                      </span>
                     </div>
                   </div>
                 </div>
