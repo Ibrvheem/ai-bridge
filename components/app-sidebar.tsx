@@ -1,18 +1,9 @@
 "use client";
 
 import * as React from "react";
-import {
-  BookOpen,
-  Bot,
-  GalleryVerticalEnd,
-  LifeBuoy,
-  FolderOpen,
-  Send,
-  Settings2,
-} from "lucide-react";
+import { GalleryVerticalEnd, FolderOpen } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
@@ -38,85 +29,6 @@ const data = {
       icon: FolderOpen,
       isActive: true,
       items: [],
-    },
-    {
-      title: "Settings",
-      url: "/settings",
-      icon: Settings2,
-      items: [
-        {
-          title: "Languages",
-          url: "/settings/languages",
-        },
-        // {
-        //   title: "General",
-        //   url: "/settings/general",
-        // },
-        // {
-        //   title: "Team",
-        //   url: "/settings/team",
-        // },
-        // {
-        //   title: "Billing",
-        //   url: "/settings/billing",
-        // },
-      ],
-    },
-  ],
-  wip: [
-    {
-      title: "Models - WIP",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation - WIP",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Support",
-      url: "#",
-      icon: LifeBuoy,
-    },
-    {
-      title: "Feedback",
-      url: "#",
-      icon: Send,
     },
   ],
 };
@@ -148,16 +60,6 @@ export function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavSecondary
-          items={data.wip}
-          className="mt-auto"
-          groupLabel="Nice to Have"
-        />
-        <NavSecondary
-          items={data.navSecondary}
-          className="mt-auto"
-          groupLabel="Nice to Have"
-        />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />
