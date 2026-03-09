@@ -4,12 +4,11 @@ import * as React from "react";
 import {
   BookOpen,
   Bot,
-  FileText,
   GalleryVerticalEnd,
   LifeBuoy,
+  FolderOpen,
   Send,
   Settings2,
-  SquareTerminal,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -34,16 +33,10 @@ const data = {
   },
   navMain: [
     {
-      title: "Annotations",
-      url: "/annotations",
-      icon: SquareTerminal,
+      title: "Sessions",
+      url: "/sessions",
+      icon: FolderOpen,
       isActive: true,
-      items: [],
-    },
-    {
-      title: "Sentences",
-      url: "/sentences",
-      icon: FileText,
       items: [],
     },
     {

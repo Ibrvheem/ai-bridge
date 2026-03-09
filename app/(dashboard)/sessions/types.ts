@@ -121,3 +121,32 @@ export interface SentenceListItem {
   collector_id?: { email: string };
   annotator_id?: { email: string };
 }
+
+// Session (upload)
+export interface Session {
+  _id: string;
+  document_id: string;
+  user_id: string;
+  original_filename: string;
+  s3_key: string;
+  file_size: number;
+  mime_type: string;
+  total_rows: number;
+  successful_inserts: number;
+  failed_inserts: number;
+  duplicate_count: number;
+  status: "completed" | "failed" | "processing";
+  created_at: string;
+  updated_at: string;
+  download_url?: string;
+}
+
+// Session stats
+export interface SessionStats {
+  total: number;
+  annotated: number;
+  unannotated: number;
+  exported: number;
+  exportable: number;
+  progress: number;
+}
