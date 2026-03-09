@@ -55,7 +55,7 @@ export function UserMenu({ user }: UserMenuProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link
-            href="/annotations"
+            href="/sessions"
             className="flex items-center gap-1 cursor-pointer"
           >
             <LayoutDashboard className="h-3 w-3" />
