@@ -11,6 +11,7 @@ import {
 import { Form } from "@/components/ui/form";
 import { useLoginForm } from "../_hooks/use-login-form";
 import ControlledInput from "@/components/molecules/controlled-input";
+import Link from "next/link";
 
 export function LoginForm({
   className,
@@ -83,6 +84,12 @@ export function LoginForm({
                 >
                   Login
                 </Button>
+              </div>
+              <div className="text-center text-sm">
+                Don&apos;t have an account?{" "}
+                <Link href="/signup" className="underline underline-offset-4">
+                  Sign up
+                </Link>
               </div>
             </div>
           </Form>

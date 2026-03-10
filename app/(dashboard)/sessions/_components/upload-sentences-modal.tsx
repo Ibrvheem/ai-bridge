@@ -133,15 +133,15 @@ export function UploadSentencesModal({
               </Button>
             </div>
 
-            {/* Language selection */}
-            <ControlledSelect
+            {/* Language selection - hidden for now */}
+            {/* <ControlledSelect
               name="language"
               label="Default Language (Optional)"
               placeholder="Select a language"
               description="Only needed if CSV doesn't include language column"
               values={formattedLanguages}
-              className="w-full"
-            />
+              className="hidden"
+            /> */}
 
             {/* File upload with reusable FileDropzone */}
             <FileDropzone
