@@ -103,10 +103,10 @@ export enum Device {
 }
 
 export enum QAStatus {
-  GOLD = "gold",
-  PASSED = "passed",
+  ACCEPTED = "accepted",
   NEEDS_REVIEW = "needs_review",
   REJECTED = "rejected",
+  DISPUTED = "disputed",
 }
 
 export type DataCollection = {
@@ -138,11 +138,77 @@ export type Annotation = {
   stereotype_category?: StereotypeCategory | null;
   sentiment_toward_referent?: SentimentTowardReferent | null;
   device?: Device | null;
-  annotator_id?: string;
+  annotator_id?:
+    | string
+    | { email: string; first_name?: string; last_name?: string };
   annotation_date?: Date;
   qa_status: QAStatus;
   notes?: string | null;
   annotation_time_seconds?: number;
+  review_notes?: string | null;
+  dispute_notes?: string | null;
+  review_history?: ReviewHistoryEntry[];
+};
+
+export type ReviewHistoryEntry = {
+  _id?: string;
+  user_id:
+    | string
+    | { _id: string; email: string; first_name?: string; last_name?: string };
+  action: "accepted" | "rejected" | "appealed";
+  notes?: string | null;
+  created_at: string;
 };
 
 export type AnnotatedData = DataCollection & Annotation;
+
+export interface ReviewSession {
+  _id: string;
+  name: string;
+  reviewer_id: string;
+  annotator_id: string;
+  document_id: string;
+  status: "active" | "completed";
+  sentence_ids: string[];
+  reviewed_sentence_ids: string[];
+  total_sentences: number;
+  total_reviewed: number;
+  total_accepted: number;
+  total_rejected: number;
+  started_at: string;
+  last_activity_at: string;
+  completed_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ReviewAssignment {
+  _id: string;
+  reviewer_id: string;
+  annotator_id: string | { _id: string; email: string };
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AnnotatorSession {
+  _id: string;
+  document_id: string;
+  original_filename: string;
+  file_size: number;
+  total_rows: number;
+  successful_inserts: number;
+  status: string;
+  created_at: string;
+  annotated_count: number;
+  has_active_review: boolean;
+  active_review_id: string | null;
+}
+
+export interface ReviewSessionStats {
+  total_sentences: number;
+  total_reviewed: number;
+  total_accepted: number;
+  total_rejected: number;
+  remaining: number;
+  status: string;
+}

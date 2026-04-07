@@ -96,3 +96,33 @@ export async function exportSession(
     return { error: "Failed to export session" };
   }
 }
+
+// Get rejected sentences for a session
+export async function getSessionRejected(documentId: string) {
+  try {
+    const response = await api.get(`sentences/session/${documentId}/rejected`, {
+      tags: ["sessions"],
+    });
+    return response;
+  } catch (error) {
+    console.error("Error fetching rejected sentences:", error);
+    return [];
+  }
+}
+
+// Dispute a rejected sentence
+export async function disputeSentence(
+  sentenceId: string,
+  disputeNotes: string,
+) {
+  try {
+    const response = await api.patch(`sentences/dispute/${sentenceId}`, {
+      dispute_notes: disputeNotes,
+    });
+    revalidateTag("sessions");
+    return response;
+  } catch (error) {
+    console.error("Error disputing sentence:", error);
+    return { error: "Failed to dispute sentence" };
+  }
+}

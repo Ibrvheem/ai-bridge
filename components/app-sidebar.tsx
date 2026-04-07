@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { GalleryVerticalEnd, FolderOpen } from "lucide-react";
+import { GalleryVerticalEnd, FolderOpen, ClipboardCheck } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -29,6 +29,17 @@ const data = {
       icon: FolderOpen,
       isActive: true,
       items: [],
+    },
+    {
+      title: "Reviews",
+      url: "/reviews",
+      icon: ClipboardCheck,
+      isActive: false,
+      items: [
+        { title: "My Reviews", url: "/reviews" },
+        { title: "My Appeals", url: "/reviews/appeals" },
+        // { title: "Assign QA", url: "/reviews/assign" },
+      ],
     },
   ],
 };
