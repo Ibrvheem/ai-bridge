@@ -40,12 +40,6 @@ export default async function ReviewsPage() {
             Review annotated sentences for quality assurance
           </p>
         </div>
-        <Link href="/reviews/assign">
-          <Button variant="outline" className="gap-2">
-            <Shield className="h-4 w-4" />
-            Assign QA
-          </Button>
-        </Link>
       </div>
 
       {/* Assigned Annotators */}
