@@ -89,7 +89,7 @@ export default async function ReviewsPage() {
       )}
 
       {/* Active / Completed Review Sessions */}
-      <div className="space-y-3">
+      {/* <div className="space-y-3">
         {sessionList.length === 0 ? (
           <>
             <h2 className="text-lg font-semibold text-slate-900">
@@ -116,7 +116,7 @@ export default async function ReviewsPage() {
             ))}
           </div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }
