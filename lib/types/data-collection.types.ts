@@ -175,6 +175,7 @@ export interface ReviewSession {
   total_reviewed: number;
   total_accepted: number;
   total_rejected: number;
+  needs_re_review: number;
   started_at: string;
   last_activity_at: string;
   completed_at?: string;
@@ -202,6 +203,7 @@ export interface AnnotatorSession {
   annotated_count: number;
   has_active_review: boolean;
   active_review_id: string | null;
+  review_status: "active" | "completed" | null;
 }
 
 export interface ReviewSessionStats {

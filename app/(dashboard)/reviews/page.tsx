@@ -9,24 +9,44 @@ import {
   Clock,
   Users,
   Shield,
+  AlertTriangle,
+  ThumbsDown,
 } from "lucide-react";
 import dayjs from "@/lib/dayjs";
 import Link from "next/link";
-import { getReviewSessions, getMyAssignments } from "./services";
+import {
+  getReviewSessions,
+  getMyAssignments,
+  getMyRejectedSentences,
+} from "./services";
 import {
   ReviewSession,
   ReviewAssignment,
 } from "@/lib/types/data-collection.types";
 
 export default async function ReviewsPage() {
-  const [sessions, assignments] = await Promise.all([
+  const [sessions, assignments, rejectedSentences] = await Promise.all([
     getReviewSessions(),
     getMyAssignments(),
+    getMyRejectedSentences(),
   ]);
   const sessionList: ReviewSession[] = Array.isArray(sessions) ? sessions : [];
   const assignmentList: ReviewAssignment[] = Array.isArray(assignments)
     ? assignments
     : [];
+  const rejectedList = Array.isArray(rejectedSentences)
+    ? rejectedSentences
+    : [];
+  const rejectedCount = rejectedList.filter(
+    (s: any) => s.qa_status === "rejected",
+  ).length;
+  const appealedCount = rejectedList.filter(
+    (s: any) => s.qa_status === "disputed",
+  ).length;
+  const totalReReviewAcrossSessions = sessionList.reduce(
+    (sum, s) => sum + (s.needs_re_review || 0),
+    0,
+  );
 
   return (
     <div className="space-y-6">
@@ -41,6 +61,46 @@ export default async function ReviewsPage() {
           </p>
         </div>
       </div>
+
+      {/* Notification Banners */}
+      {totalReReviewAcrossSessions > 0 && (
+        <div className="flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4">
+          <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-amber-800">
+              {totalReReviewAcrossSessions} sentence
+              {totalReReviewAcrossSessions > 1 ? "s" : ""} need re-review
+            </p>
+            <p className="text-xs text-amber-600">
+              Annotators have appealed or resubmitted sentences in your review
+              sessions.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {rejectedCount > 0 && (
+        <Link href="/reviews/appeals">
+          <div className="flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 p-4 hover:bg-red-100 transition-colors cursor-pointer">
+            <ThumbsDown className="h-5 w-5 text-red-600 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-red-800">
+                {rejectedCount} sentence{rejectedCount > 1 ? "s" : ""} rejected
+                {appealedCount > 0 && (
+                  <span className="text-amber-700 ml-1">
+                    ({appealedCount} appealed)
+                  </span>
+                )}
+              </p>
+              <p className="text-xs text-red-600">
+                You have rejected sentences that need attention. Click to review
+                and appeal.
+              </p>
+            </div>
+            <ChevronRight className="h-4 w-4 text-red-400" />
+          </div>
+        </Link>
+      )}
 
       {/* Assigned Annotators */}
       {assignmentList.length > 0 && (
@@ -169,6 +229,12 @@ function ReviewSessionCard({ session }: { session: ReviewSession }) {
                   <span className="text-red-600">
                     {session.total_rejected} rejected
                   </span>
+                  {session.needs_re_review > 0 && (
+                    <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 text-xs px-1.5 py-0">
+                      <AlertTriangle className="h-3 w-3 mr-1" />
+                      {session.needs_re_review} needs re-review
+                    </Badge>
+                  )}
                 </div>
               </div>
             </div>

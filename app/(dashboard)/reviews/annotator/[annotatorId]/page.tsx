@@ -113,8 +113,17 @@ function AnnotatorSessionCard({
             {session.has_active_review && session.active_review_id ? (
               <Link href={`/reviews/${session.active_review_id}`}>
                 <Button variant="outline" size="sm">
-                  <CheckCircle2 className="h-4 w-4 mr-2 text-green-500" />
-                  Continue Review
+                  {session.review_status === "completed" ? (
+                    <>
+                      <CheckCircle2 className="h-4 w-4 mr-2 text-green-500" />
+                      View Review
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="h-4 w-4 mr-2 text-amber-500" />
+                      Continue Review
+                    </>
+                  )}
                 </Button>
               </Link>
             ) : (
